@@ -111,14 +111,18 @@ cp ./data/backup-20260310.db ./data/prix-carburants.db
 docker-compose restart app
 ```
 
-## Collecte automatique (cron)
+## Collecte automatique
+
+Le serveur intègre une collecte automatique **autonome** :
+
+- Synchronisée sur l'heure pile (18:00, 19:00, etc.)
+- Pas de cron externe nécessaire
+- Redémarre automatiquement avec le serveur
 
 ```bash
-# Ajouter au crontab
-crontab -e
-
-# Collecte toutes les heures
-0 * * * * /opt/prix-carburants/collect.sh >> /var/log/prix-carburants.log 2>&1
+# Vérifier la version et l'état
+curl http://localhost:3200/api/health
+# {"status":"ok","version":"1.1.0","stationsLoaded":9832,"lastUpdate":"..."}
 ```
 
 ## Sécurité

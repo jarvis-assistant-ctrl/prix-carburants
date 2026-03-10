@@ -17,7 +17,7 @@ Deux versions disponibles :
 
 ---
 
-## 🌐 Version Web (V0.1)
+## 🌐 Version Web (v1.1.0)
 
 ### Structure
 
@@ -60,7 +60,7 @@ Le serveur démarre sur `http://localhost:3000`
 
 ---
 
-## 📱 Version iOS (V0.1)
+## 📱 Version iOS (v0.1)
 
 ### Structure
 
@@ -103,14 +103,17 @@ Sources/
 
 ## ✅ État actuel
 
-### Web (V0.1)
+### Web (v1.1.0)
 - [x] Serveur Express + API
 - [x] Parsing XML/ZIP officiel
 - [x] Interface responsive
 - [x] Filtrage par carburant et rayon
+- [x] Historique des prix par station
+- [x] Collecte automatique horaire (à l'heure pile)
+- [x] Service systemd autonome
 - [ ] Carte interactive
 
-### iOS (V0.1)
+### iOS (v0.1)
 - [x] Structure SwiftUI
 - [x] Modèles de données
 - [x] Service mock (données test)
@@ -132,12 +135,12 @@ Source : **prix-carburants.gouv.fr**
 
 ## 🔨 Prochaines étapes
 
-**Web V0.2**
+**Web v1.2**
 - [ ] Carte Leaflet avec marqueurs
-- [ ] Historique des recherches
 - [ ] PWA (installable)
+- [ ] Tendances de prix (évolution sur 7 jours)
 
-**iOS V0.2**
+**iOS v0.2**
 - [ ] Intégrer la vraie API
 - [ ] MapKit pour la carte
 - [ ] Favoris / Alertes
