@@ -191,7 +191,11 @@
           selectedIndex = -1;
           if (currentSuggestions.length === 0) { hideSuggestions(); return; }
           suggestionsEl.innerHTML = currentSuggestions.map(function(s, i) {
-            return '<a class="list-group-item list-group-item-action" onclick="selectSuggestion(' + i + ')">' + s.properties.label + '</a>';
+            // Ville en bold + code postal en gris
+            const ville = s.properties.name || s.properties.city || s.properties.label;
+            const postcode = s.properties.postcode || '';
+            const displayLabel = '<strong>' + ville + '</strong>' + (postcode ? ' <span style="color:#888;font-size:0.9em">' + postcode + '</span>' : '');
+            return '<a class="list-group-item list-group-item-action" onclick="selectSuggestion(' + i + ')">' + displayLabel + '</a>';
           }).join('');
           suggestionsEl.classList.add('show');
         });

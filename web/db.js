@@ -161,21 +161,14 @@ function analyzeTrend(history) {
     return 'stable';
   }
   
-  const recent = history.slice(-7); // 7 derniers jours
-  const older = history.slice(0, -7); // Période précédente
+  // Comparer premier et dernier prix pour détecter la tendance
+  const first = history[0].prix;
+  const last = history[history.length - 1].prix;
+  const diff = last - first;
   
-  if (recent.length < 2 || older.length < 1) {
-    return 'stable';
-  }
-  
-  const recentAvg = recent.reduce((sum, r) => sum + r.prix, 0) / recent.length;
-  const olderAvg = older.reduce((sum, r) => sum + r.prix, 0) / older.length;
-  
-  const diff = recentAvg - olderAvg;
-  
-  // Écart de plus de 2 cents = significatif
-  if (diff > 0.02) return 'hausse';
-  if (diff < -0.02) return 'baisse';
+  // Écart de plus de 1 cent = significatif
+  if (diff > 0.01) return 'hausse';
+  if (diff < -0.01) return 'baisse';
   return 'stable';
 }
 

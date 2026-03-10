@@ -408,8 +408,9 @@ app.post('/api/collect-internal', async (req, res) => {
       await refreshData();
     }
     
-    // UN SEUL timestamp pour toute la collecte (tous carburants)
-    const collectTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    // UN SEUL timestamp pour toute la collecte (tous carburants) - heure locale Paris
+    const now = new Date();
+    const collectTimestamp = now.toLocaleString('sv-SE', { timeZone: 'Europe/Paris' }).replace('T', ' ').substring(0, 19);
     const carburants = ['Gazole', 'E10', 'SP95', 'SP98', 'E85', 'GPLc'];
     const results = {};
     const totalStations = stationsCache.length;
@@ -477,7 +478,7 @@ async function start() {
         console.log('🔄 Collecte automatique...');
         await refreshData();
         console.log('📥 Données rafraîchies');
-        const collectTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        const collectTimestamp = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Paris' }).replace('T', ' ').substring(0, 19);
         const carburants = ['Gazole', 'E10', 'SP95', 'SP98', 'E85', 'GPLc'];
         for (const carburant of carburants) {
           if (stationsCache && stationsCache.length > 0) {

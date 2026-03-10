@@ -76,3 +76,11 @@ web/
 ## Licence
 
 MIT
+
+## Changelog
+
+### v1.1.1 (10/03/2026)
+- **Fix**: Timestamps en heure locale Paris (plus UTC)
+- **Fix**: Détection des tendances corrigée (hausse/baisse maintenant visible)
+- **Amélioration**: Autocomplétion avec ville en **bold** + code postal en gris
+- **Données**: Historique des prix maintenant correctement horodaté
