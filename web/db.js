@@ -53,13 +53,14 @@ function createTables() {
 /**
  * Enregistre un prix
  */
-function savePrice(stationId, stationVille, carburant, prix) {
+function savePrice(stationId, stationVille, carburant, prix, timestamp = null) {
   return new Promise((resolve, reject) => {
+    const ts = timestamp || new Date().toISOString().replace('T', ' ').substring(0, 19);
     const sql = `
       INSERT OR REPLACE INTO price_history (station_id, station_ville, carburant, prix, recorded_at)
-      VALUES (?, ?, ?, ?, datetime('now', 'localtime'))
+      VALUES (?, ?, ?, ?, ?)
     `;
-    db.run(sql, [stationId, stationVille, carburant, prix], function(err) {
+    db.run(sql, [stationId, stationVille, carburant, prix, ts], function(err) {
       if (err) reject(err);
       else resolve(this.lastID);
     });
@@ -68,12 +69,16 @@ function savePrice(stationId, stationVille, carburant, prix) {
 
 /**
  * Enregistre les prix de plusieurs stations
+ * Utilise UN SEUL timestamp pour toute la collecte (évite les doublons par seconde)
  */
-async function savePrices(stations, carburant) {
+async function savePrices(stations, carburant, timestamp = null) {
+  // Utiliser le timestamp fourni ou en créer un (format: YYYY-MM-DD HH:MM:SS)
+  const ts = timestamp || new Date().toISOString().replace('T', ' ').substring(0, 19);
+  
   const promises = stations.map(station => {
     const prix = station.prix.find(p => p.nom === carburant);
     if (prix) {
-      return savePrice(station.id, station.ville, carburant, prix.valeur);
+      return savePrice(station.id, station.ville, carburant, prix.valeur, ts);
     }
     return Promise.resolve();
   });

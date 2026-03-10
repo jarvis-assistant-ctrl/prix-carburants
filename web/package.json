@@ -1,6 +1,6 @@
 {
   "name": "prix-carburants-web",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Application web pour trouver les stations essence les moins chères",
   "main": "server.js",
   "scripts": {

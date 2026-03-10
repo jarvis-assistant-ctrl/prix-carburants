@@ -5,6 +5,8 @@
  */
 
 const express = require('express');
+const https = require('https');
+const http = require('http');
 const fetch = require('node-fetch');
 const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
@@ -12,9 +14,23 @@ const db = require('./db');
 const path = require('path');
 const fs = require('fs');
 
+const VERSION = require('./package.json').version;
 const app = express();
-const PORT = process.env.PORT || 3200;
+const HTTP_PORT = process.env.HTTP_PORT || 3200;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3201;
 const HOST = process.env.HOST || '0.0.0.0';
+
+// Charger les certificats HTTPS
+let httpsOptions = null;
+try {
+  httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+  };
+  console.log('✅ Certificats HTTPS chargés');
+} catch (e) {
+  console.log('⚠️ Certificats HTTPS non trouvés, mode HTTP uniquement');
+}
 
 // Cache des données
 let stationsCache = null;
@@ -262,6 +278,7 @@ app.get('/api/refresh', async (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
+    version: VERSION,
     stationsLoaded: stationsCache?.length || 0,
     lastUpdate: lastUpdate
   });
@@ -391,17 +408,19 @@ app.post('/api/collect-internal', async (req, res) => {
       await refreshData();
     }
     
+    // UN SEUL timestamp pour toute la collecte (tous carburants)
+    const collectTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const carburants = ['Gazole', 'E10', 'SP95', 'SP98', 'E85', 'GPLc'];
     const results = {};
     const totalStations = stationsCache.length;
     
     for (const carburant of carburants) {
       // Collecter pour TOUTES les stations de France
-      const saved = await db.savePrices(stationsCache, carburant);
+      const saved = await db.savePrices(stationsCache, carburant, collectTimestamp);
       results[carburant] = saved.length;
     }
     
-    console.log('📊 Collecte nationale:', results, '- Total stations:', totalStations);
+    console.log('📊 Collecte nationale:', results, '- Total stations:', totalStations, '- Timestamp:', collectTimestamp);
     
     res.json({
       success: true,
@@ -424,40 +443,66 @@ async function start() {
     await db.init();
     console.log('✅ Base de données initialisée');
     
-    // Démarrer le serveur
-    app.listen(PORT, HOST, () => {
-      console.log(`🚀 Serveur démarré sur http://${HOST}:${PORT}`);
-      console.log('📍 API disponible sur /api/stations');
-      
-      // Pré-charger les données au démarrage
-      refreshData().then(() => {
-        console.log('📥 Données prix-carburants chargées');
-        
-        // Sauvegarder les prix pour l'historique (Gazole par défaut)
-        if (stationsCache && stationsCache.length > 0) {
-          db.savePrices(stationsCache.slice(0, 100), 'Gazole')
-            .then(() => console.log('📊 Historique initial sauvegardé'))
-            .catch(err => console.error('Erreur historique:', err));
-        }
-      }).catch(console.error);
+    // Pré-charger les données au démarrage
+    await refreshData();
+    console.log('📥 Données prix-carburants chargées');
+    
+    // Sauvegarder les prix pour l'historique (Gazole par défaut)
+    if (stationsCache && stationsCache.length > 0) {
+      db.savePrices(stationsCache.slice(0, 100), 'Gazole')
+        .then(() => console.log('📊 Historique initial sauvegardé'))
+        .catch(err => console.error('Erreur historique:', err));
+    }
+    
+    // Serveur HTTP (toujours actif)
+    http.createServer(app).listen(HTTP_PORT, HOST, () => {
+      console.log(`🌐 HTTP  : http://${HOST}:${HTTP_PORT}`);
     });
     
-    // Collecte automatique toutes les heures
-    const COLLECT_INTERVAL = 60 * 60 * 1000; // 1 heure
-    setInterval(async () => {
+    // Serveur HTTPS (si certificats disponibles)
+    if (httpsOptions) {
+      https.createServer(httpsOptions, app).listen(HTTPS_PORT, HOST, () => {
+        console.log(`🔒 HTTPS : https://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${HTTPS_PORT}`);
+        console.log('⚠️  ATTENTION: Certificat auto-signé - Le navigateur affichera un avertissement');
+        console.log('📱 Pour mobile: Accepter le certificat ou installer le CA mkcert sur le téléphone');
+      });
+    }
+    
+    console.log('📍 API disponible sur /api/stations');
+    console.log(`📦 Version: ${VERSION}`);
+    
+    // Collecte automatique à l'heure pile (autonome, sans dépendance externe)
+    const doCollect = async () => {
       try {
         console.log('🔄 Collecte automatique...');
+        await refreshData();
+        console.log('📥 Données rafraîchies');
+        const collectTimestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
         const carburants = ['Gazole', 'E10', 'SP95', 'SP98', 'E85', 'GPLc'];
         for (const carburant of carburants) {
           if (stationsCache && stationsCache.length > 0) {
-            await db.savePrices(stationsCache, carburant);
+            await db.savePrices(stationsCache, carburant, collectTimestamp);
           }
         }
-        console.log('✅ Collecte automatique terminée');
+        console.log('✅ Collecte automatique terminée - Timestamp:', collectTimestamp);
       } catch (err) {
         console.error('❌ Erreur collecte auto:', err);
       }
-    }, COLLECT_INTERVAL);
+    };
+
+    // Calcul du délai jusqu'à la prochaine heure pile
+    const now = new Date();
+    const nextHour = new Date(now);
+    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+    const delayToNextHour = nextHour - now;
+    
+    console.log(`⏰ Première collecte dans ${Math.round(delayToNextHour/60000)} min (à ${nextHour.getHours()}:00)`);
+    
+    // Première collecte à l'heure pile, puis toutes les heures
+    setTimeout(() => {
+      doCollect();
+      setInterval(doCollect, 60 * 60 * 1000);
+    }, delayToNextHour);
     
   } catch (error) {
     console.error('❌ Erreur démarrage:', error);
