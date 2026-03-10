@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Archives
+web/data/archives/
+web/data/*.zip
+web/data/*.xml
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Env
+.env
+.env.local
+
+# iOS build
+Sources/*.xcodeproj/xcuserdata/
+Sources/*.xcworkspace/xcuserdata/
+Sources/DerivedData/
+Sources/build/
+Sources/.build/
+
+# Temporary
+tmp/
+temp/

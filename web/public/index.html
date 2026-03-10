@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prix Carburants - Stations pr&egrave;s de vous</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
+    .card { border: none; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .card-winner { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+    .card-winner .badge { background: rgba(255,255,255,0.2); }
+    .card-winner .station-trend { background: rgba(0,0,0,0.15); border-left-color: rgba(255,255,255,0.4); }
+    .card-winner .station-trend .small { color: rgba(255,255,255,0.9); }
+    .card-winner .trend-bar { background: rgba(255,255,255,0.2); }
+    .card-winner .trend-up { background: rgba(220,53,69,0.3); border-left-color: #ff6b6b; }
+    .card-winner .trend-down { background: rgba(40,167,69,0.3); border-left-color: #51cf66; }
+    .card-winner .trend-stable { background: rgba(255,255,255,0.1); border-left-color: rgba(255,255,255,0.4); }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; font-weight: 600; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .form-select, .form-range { border-radius: 0.75rem; }
+    .station-card { transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 0.75rem; cursor: pointer; }
+    .station-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .station-row { display: flex; gap: 0.5rem; }
+    .station-main { flex: 1; }
+    .station-trend { min-width: 140px; padding: 0.5rem; border-left: 3px solid #dee2e6; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .trend-up { border-left-color: #dc3545; background: linear-gradient(90deg, #fff 0%, #ffebee 100%); }
+    .trend-down { border-left-color: #28a745; background: linear-gradient(90deg, #fff 0%, #e8f5e9 100%); }
+    .trend-stable { border-left-color: #6c757d; background: linear-gradient(90deg, #fff 0%, #f8f9fa 100%); }
+    .trend-bar { width: 100%; height: 6px; background: #e9ecef; border-radius: 3px; margin: 4px 0; position: relative; }
+    .trend-bar-fill { height: 100%; border-radius: 3px; }
+    #suggestions { display: none; position: absolute; z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%; }
+    #suggestions.show { display: block; }
+    #suggestions .list-group-item { border: none; border-bottom: 1px solid #eee; padding: 0.75rem 1rem; cursor: pointer; }
+    #suggestions .list-group-item:last-child { border-bottom: none; }
+    #suggestions .list-group-item:hover { background-color: #f0f3ff; }
+    #suggestions .list-group-item.active { background-color: #667eea; color: white; }
+    .history-btn { background: none; border: none; color: #667eea; padding: 0.25rem 0.5rem; font-size: 0.85rem; cursor: pointer; }
+    .history-btn:hover { text-decoration: underline; }
+    .modal-content { border-radius: 1rem; border: none; }
+    .modal-header { border-bottom: none; padding-bottom: 0; }
+    .chart-container { position: relative; height: 300px; width: 100%; }
+  </style>
+</head>
+<body class="py-4">
+  <div class="container" style="max-width: 600px;">
+    <header class="text-center mb-4">
+      <h1 class="display-5 fw-bold">&#9889; Prix Carburants</h1>
+      <p class="text-muted">Trouvez les stations les moins ch&egrave;res pr&egrave;s de chez vous</p>
+    </header>
+    
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3"><i class="bi bi-search"></i> Param&egrave;tres de recherche</h5>
+        
+        <div class="mb-3 position-relative">
+          <label class="form-label">Votre position</label>
+          <div class="input-group">
+            <input type="text" id="adresse" class="form-control" placeholder="Ex: Brie-Comte-Robert, Paris, 77170..." autocomplete="off">
+            <button class="btn btn-outline-secondary" type="button" onclick="geolocate()" title="Utiliser ma position GPS">
+              <i class="bi bi-crosshair"></i>
+            </button>
+          </div>
+          <div id="suggestions" class="list-group position-absolute w-100 shadow"></div>
+          <small class="text-muted">Entrez une ville, un code postal ou une adresse</small>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Type de carburant</label>
+          <select id="carburant" class="form-select">
+            <option value="Gazole">Gazole (Diesel)</option>
+            <option value="E10">E10 (SP95-E10)</option>
+            <option value="SP95">SP95</option>
+            <option value="SP98">SP98</option>
+            <option value="E85">E85 (Sup&eacute;rethanol)</option>
+            <option value="GPLc">GPL</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Rayon de recherche</label>
+          <div class="d-flex align-items-center gap-3">
+            <input type="range" id="radius" class="form-range flex-grow-1" min="1" max="50" value="10">
+            <span id="radiusValue" class="badge bg-primary rounded-pill fs-6">10 km</span>
+          </div>
+        </div>
+        
+        <button id="searchBtn" class="btn btn-primary w-100" onclick="search()">
+          <i class="bi bi-geo-alt"></i> Trouver les stations
+        </button>
+      </div>
+    </div>
+    
+    <div id="stats" class="d-flex gap-2 mb-3" style="display: none !important;">
+      <span class="badge bg-secondary fs-6 p-2"><i class="bi bi-fuel-pump"></i> <span id="carburantLabel">Gazole</span></span>
+      <span class="badge bg-success fs-6 p-2"><i class="bi bi-check-circle"></i> <span id="countLabel">0 stations</span></span>
+    </div>
+    
+    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+    
+    <div id="stations" class="stations-list"></div>
+    
+    <footer class="text-center text-muted mt-4">
+      <small>Donn&eacute;es: <a href="https://prix-carburants.gouv.fr" target="_blank">prix-carburants.gouv.fr</a></small>
+    </footer>
+  </div>
+
+  <!-- Modal Historique -->
+  <div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="historyModalTitle">Historique des prix</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-between mb-3">
+            <div>
+              <span class="badge bg-primary" id="historyCarburant">Gazole</span>
+              <span class="text-muted ms-2" id="historyStation">Station</span>
+            </div>
+            <div class="text-end">
+              <div class="h4 mb-0" id="historyCurrentPrice">-</div>
+              <small class="text-muted" id="historyTrend">-</small>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+          </div>
+          <div class="row mt-3 text-center">
+            <div class="col-4">
+              <small class="text-muted">Prix min</small>
+              <div class="fw-bold text-success" id="historyMin">-</div>
+            </div>
+            <div class="col-4">
+              <small class="text-muted">Prix moyen</small>
+              <div class="fw-bold" id="historyAvg">-</div>
+            </div>
+            <div class="col-4">
+              <small class="text-muted">Prix max</small>
+              <div class="fw-bold text-danger" id="historyMax">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let userLat = null;
+    let userLon = null;
+    let debounceTimer = null;
+    
+    const adresseInput = document.getElementById('adresse');
+    const suggestionsEl = document.getElementById('suggestions');
+    let currentSuggestions = [];
+    let selectedIndex = -1;
+    
+    document.getElementById('radius').addEventListener('input', function(e) {
+      document.getElementById('radiusValue').textContent = e.target.value + ' km';
+    });
+    
+    adresseInput.addEventListener('input', function(e) {
+      clearTimeout(debounceTimer);
+      const value = e.target.value.trim();
+      if (value.length < 3) { hideSuggestions(); return; }
+      debounceTimer = setTimeout(function() { fetchSuggestions(value); }, 300);
+    });
+    
+    adresseInput.addEventListener('keydown', function(e) {
+      if (!suggestionsEl.classList.contains('show')) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1); highlightSuggestion(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = Math.max(selectedIndex - 1, 0); highlightSuggestion(); }
+      else if (e.key === 'Enter' && selectedIndex >= 0) { e.preventDefault(); selectSuggestion(selectedIndex); }
+      else if (e.key === 'Escape') { hideSuggestions(); }
+    });
+    
+    document.addEventListener('click', function(e) {
+      if (!adresseInput.contains(e.target) && !suggestionsEl.contains(e.target)) { hideSuggestions(); }
+    });
+    
+    function fetchSuggestions(q) {
+      fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(q) + '&limit=5')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          currentSuggestions = d.features || [];
+          selectedIndex = -1;
+          if (currentSuggestions.length === 0) { hideSuggestions(); return; }
+          suggestionsEl.innerHTML = currentSuggestions.map(function(s, i) {
+            return '<a class="list-group-item list-group-item-action" onclick="selectSuggestion(' + i + ')">' + s.properties.label + '</a>';
+          }).join('');
+          suggestionsEl.classList.add('show');
+        });
+    }
+    
+    function selectSuggestion(i) {
+      const s = currentSuggestions[i];
+      adresseInput.value = s.properties.label;
+      userLat = s.geometry.coordinates[1];
+      userLon = s.geometry.coordinates[0];
+      hideSuggestions();
+    }
+    
+    function highlightSuggestion() {
+      const items = suggestionsEl.querySelectorAll('.list-group-item');
+      for (let j = 0; j < items.length; j++) { items[j].classList.toggle('active', j === selectedIndex); }
+    }
+    
+    function hideSuggestions() { suggestionsEl.classList.remove('show'); selectedIndex = -1; }
+    
+    function geolocate() {
+      if (!navigator.geolocation) { alert('G&eacute;olocalisation non support&eacute;e'); return; }
+      navigator.geolocation.getCurrentPosition(
+        function(p) { userLat = p.coords.latitude; userLon = p.coords.longitude; adresseInput.value = userLat.toFixed(4) + ', ' + userLon.toFixed(4); },
+        function(e) { alert('Erreur: ' + e.message); }
+      );
+    }
+    
+    function search() {
+      const adresse = adresseInput.value.trim();
+      const carburant = document.getElementById('carburant').value;
+      const radius = document.getElementById('radius').value;
+      const errorEl = document.getElementById('errorMessage');
+      const stationsEl = document.getElementById('stations');
+      const btn = document.getElementById('searchBtn');
+      
+      if (!adresse && !userLat) { errorEl.style.display = 'block'; errorEl.textContent = 'Entrez une adresse'; return; }
+      
+      btn.disabled = true; btn.textContent = 'Recherche...';
+      errorEl.style.display = 'none'; stationsEl.innerHTML = '';
+      
+      function doSearch(lat, lon) {
+        fetch('/api/stations/cheapest?lat=' + lat + '&lon=' + lon + '&radius=' + radius + '&carburant=' + carburant)
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.stations.length === 0) { errorEl.style.display = 'block'; errorEl.textContent = 'Aucune station trouv&eacute;e'; btn.disabled = false; btn.textContent = 'Trouver les stations'; return; }
+            document.getElementById('stats').style.display = 'flex';
+            document.getElementById('carburantLabel').textContent = carburant;
+            document.getElementById('countLabel').textContent = d.stations.length + ' stations';
+            const minPrice = Math.min.apply(null, d.stations.map(function(s) { return s.carburantPrix.valeur; }));
+            d.stations.forEach(function(s) { stationsEl.appendChild(createCard(s, s.carburantPrix.valeur === minPrice, carburant)); });
+            loadTrends(d.stations.map(function(s) { return s.id; }), carburant);
+            btn.disabled = false; btn.textContent = 'Trouver les stations';
+          });
+      }
+      
+      if (!userLat && adresse) {
+        fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(adresse) + '&limit=1')
+          .then(function(r) { return r.json(); })
+          .then(function(d) { if (!d.features.length) throw new Error('Adresse non trouv&eacute;e'); userLat = d.features[0].geometry.coordinates[1]; userLon = d.features[0].geometry.coordinates[0]; doSearch(userLat, userLon); })
+          .catch(function(e) { errorEl.style.display = 'block'; errorEl.textContent = e.message; btn.disabled = false; btn.textContent = 'Trouver les stations'; });
+      } else { doSearch(userLat || 48.85, userLon || 2.35); }
+    }
+    
+    function createCard(s, isWinner, carburant) {
+      const card = document.createElement('div');
+      card.className = 'card station-card' + (isWinner ? ' card-winner' : '');
+      card.onclick = function() { showHistory(s.id, carburant, s.ville || 'Station'); };
+      const trendPlaceholder = '<div class="station-trend" id="trend-' + s.id + '"><div class="spinner-border spinner-border-sm"></div></div>';
+      const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + s.latitude + ',' + s.longitude;
+      const gpsCoords = s.latitude.toFixed(4) + ', ' + s.longitude.toFixed(4);
+      card.innerHTML = 
+        '<div class="card-body">' +
+          '<div class="station-row">' +
+            '<div class="station-main">' +
+              (isWinner ? '<span class="badge mb-2"><i class="bi bi-trophy"></i> Le moins cher</span>' : '') +
+              '<h6 class="card-title mb-1">' + (s.ville || 'Station') + '</h6>' +
+              '<p class="card-text text-muted mb-1 small">' + (s.adresse || '') + '</p>' +
+              '<div>' + formatDistance(s.distance) + ' &bull; ' + carburant + '</div>' +
+              '<div class="mt-1">' +
+                '<a href="' + mapsUrl + '" target="_blank" class="text-decoration-none" onclick="event.stopPropagation();">' +
+                '<small class="text-primary"><i class="bi bi-geo-alt-fill"></i> ' + gpsCoords + '</small></a>' +
+              '</div>' +
+              '<small class="text-muted d-block mt-1"><i class="bi bi-graph-up"></i> Cliquer pour voir l\'historique</small>' +
+            '</div>' +
+            '<div class="text-end">' +
+              '<div class="h4 mb-0">' + s.carburantPrix.valeur.toFixed(3) + '</div>' +
+              '<small class="text-muted">EUR/L</small>' +
+            '</div>' +
+            trendPlaceholder +
+          '</div>' +
+        '</div>';
+      return card;
+    }
+    
+    function loadTrends(ids, carburant) {
+      fetch('/api/trends/' + carburant + '?lat=' + userLat + '&lon=' + userLon + '&radius=' + document.getElementById('radius').value)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          d.stations.forEach(function(s) {
+            const el = document.getElementById('trend-' + s.station_id);
+            if (!el) return;
+            let cls = 'trend-stable', icon = '&#10132;', txt = 'Stable';
+            if (s.trend === 'hausse') { cls = 'trend-up'; icon = '&#x1F4C8;'; txt = 'Hausse'; }
+            else if (s.trend === 'baisse') { cls = 'trend-down'; icon = '&#x1F4C9;'; txt = 'Baisse'; }
+            const range = (s.prix_max || s.prix_actuel) - (s.prix_min || s.prix_actuel);
+            const pct = range > 0 ? ((s.prix_actuel - s.prix_min) / range * 100) : 50;
+            el.className = 'station-trend ' + cls;
+            el.innerHTML = 
+              '<div>' + icon + '</div>' +
+              '<div class="small">' + txt + '</div>' +
+              '<div class="trend-bar"><div class="trend-bar-fill" style="width:' + pct + '%;background:' + (s.trend === 'hausse' ? '#dc3545' : s.trend === 'baisse' ? '#28a745' : '#6c757d') + '"></div></div>' +
+              '<div class="small">Min: ' + (s.prix_min || s.prix_actuel).toFixed(3) + '</div>' +
+              '<div class="small">Max: ' + (s.prix_max || s.prix_actuel).toFixed(3) + '</div>';
+          });
+        })
+        .catch(function(e) {
+          document.querySelectorAll('[id^="trend-"]').forEach(function(el) { el.innerHTML = '<small class="text-muted">--</small>'; });
+        });
+    }
+    
+    function formatDistance(km) { return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km'; }
+    
+    let historyChart = null;
+    const historyModal = new bootstrap.Modal(document.getElementById('historyModal'));
+    
+    function showHistory(stationId, carburant, ville) {
+      document.getElementById('historyModalTitle').textContent = 'Historique - ' + ville;
+      document.getElementById('historyCarburant').textContent = carburant;
+      document.getElementById('historyStation').textContent = stationId;
+      historyModal.show();
+      
+      fetch('/api/history/' + stationId + '/' + carburant + '?days=30')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          updateHistoryChart(d, carburant);
+        })
+        .catch(function(e) {
+          console.error('Erreur historique:', e);
+        });
+    }
+    
+    function updateHistoryChart(data, carburant) {
+      const ctx = document.getElementById('historyChart').getContext('2d');
+      const prices = data.history.map(function(h) { return h.prix; });
+      const dates = data.history.map(function(h) {
+        const d = new Date(h.recorded_at);
+        return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) + ' ' + d.getHours() + 'h';
+      });
+      
+      const minPrice = Math.min.apply(null, prices);
+      const maxPrice = Math.max.apply(null, prices);
+      const avgPrice = prices.reduce(function(a, b) { return a + b; }, 0) / prices.length;
+      const currentPrice = prices[prices.length - 1];
+      
+      document.getElementById('historyCurrentPrice').textContent = currentPrice.toFixed(3) + ' €/L';
+      
+      let trendIcon = '', trendClass = '', trendText = '';
+      if (data.trend === 'hausse') { trendIcon = '📈'; trendClass = 'text-danger'; trendText = 'Prix en hausse'; }
+      else if (data.trend === 'baisse') { trendIcon = '📉'; trendClass = 'text-success'; trendText = 'Prix en baisse'; }
+      else { trendIcon = '➡️'; trendClass = 'text-muted'; trendText = 'Prix stable'; }
+      document.getElementById('historyTrend').innerHTML = trendIcon + ' <span class="' + trendClass + '">' + trendText + '</span>';
+      
+      document.getElementById('historyMin').textContent = minPrice.toFixed(3) + ' €';
+      document.getElementById('historyAvg').textContent = avgPrice.toFixed(3) + ' €';
+      document.getElementById('historyMax').textContent = maxPrice.toFixed(3) + ' €';
+      
+      if (historyChart) { historyChart.destroy(); }
+      
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
+      gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+      
+      historyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: dates,
+          datasets: [{
+            label: carburant + ' (€/L)',
+            data: prices,
+            borderColor: '#667eea',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.3,
+            pointRadius: prices.length > 20 ? 2 : 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#667eea',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 12 },
+              bodyFont: { size: 14, weight: 'bold' },
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y.toFixed(3) + ' €/L';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              display: true,
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                maxTicksLimit: 10,
+                font: { size: 10 }
+              },
+              grid: { display: false }
+            },
+            y: {
+              display: true,
+              min: Math.floor(minPrice * 100) / 100 - 0.02,
+              max: Math.ceil(maxPrice * 100) / 100 + 0.02,
+              ticks: {
+                callback: function(value) { return value.toFixed(3) + ' €'; },
+                font: { size: 11 }
+              },
+              grid: { color: 'rgba(0,0,0,0.05)' }
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

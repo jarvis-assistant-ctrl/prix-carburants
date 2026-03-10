@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prix Carburants - Glass Morphism</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    
+    /* Glass effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .glass-light {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Custom range slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+    }
+    
+    /* Glow effect */
+    .glow {
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    
+    select option {
+      background: #1a1a2e;
+      color: white;
+    }
+    
+    /* Winner card */
+    .winner {
+      background: linear-gradient(135deg, rgba(39, 174, 96, 0.3) 0%, rgba(46, 204, 113, 0.2) 100%);
+      border: 1px solid rgba(39, 174, 96, 0.5);
+    }
+    
+    /* Floating circles */
+    .circle-1 {
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      top: 10%;
+      right: -100px;
+      pointer-events: none;
+    }
+    
+    .circle-2 {
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(118, 75, 162, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -100px;
+      left: -100px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <!-- Floating decorations -->
+  <div class="circle-1"></div>
+  <div class="circle-2"></div>
+  
+  <div class="max-w-xl mx-auto relative">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl glass mb-4 glow">
+        <span class="text-3xl">⛽</span>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">Prix Carburants</h1>
+      <p class="text-white/60">Trouvez les stations les moins chères</p>
+    </header>
+    
+    <!-- Search Card -->
+    <div class="glass rounded-3xl p-6 mb-6">
+      <h2 class="text-white/80 text-sm font-medium mb-4 uppercase tracking-wider">Paramètres</h2>
+      
+      <div class="space-y-5">
+        <div>
+          <label class="text-white/60 text-sm mb-2 block">Carburant</label>
+          <select class="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition">
+            <option>Gazole (Diesel)</option>
+            <option>E10</option>
+            <option>SP95</option>
+            <option>SP98</option>
+            <option>E85</option>
+            <option>GPL</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="text-white/60 text-sm mb-2 block">Rayon</label>
+          <div class="flex items-center gap-4">
+            <input type="range" min="1" max="50" value="10" class="flex-1">
+            <span class="text-white font-bold text-lg min-w-[50px]">10 km</span>
+          </div>
+        </div>
+        
+        <button class="w-full py-4 rounded-xl font-semibold text-white glow transition-all hover:scale-[1.02] active:scale-[0.98]" 
+                style="background: linear-gradient(135deg, #667eea, #764ba2);">
+          📍 Trouver les stations
+        </button>
+      </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="flex gap-3 mb-6">
+      <div class="glass-light rounded-2xl px-4 py-2 flex-1 text-center">
+        <div class="text-white/60 text-xs mb-1">Stations</div>
+        <div class="text-white font-bold text-xl">24</div>
+      </div>
+      <div class="glass-light rounded-2xl px-4 py-2 flex-1 text-center">
+        <div class="text-white/60 text-xs mb-1">Rayon</div>
+        <div class="text-white font-bold text-xl">10 km</div>
+      </div>
+      <div class="glass-light rounded-2xl px-4 py-2 flex-1 text-center">
+        <div class="text-white/60 text-xs mb-1">Carburant</div>
+        <div class="text-white font-bold text-xl">Diesel</div>
+      </div>
+    </div>
+    
+    <!-- Stations -->
+    <div class="space-y-4">
+      <!-- Winner -->
+      <div class="winner rounded-2xl p-5">
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex-1">
+            <div class="inline-flex items-center gap-1 text-green-400 text-sm mb-2">
+              <span>🏆</span>
+              <span>Le moins cher</span>
+            </div>
+            <h3 class="text-white font-bold text-lg">Leclerc Brie-Comte-Robert</h3>
+            <p class="text-white/50 text-sm mt-1">12 Rue Gustave Eiffel</p>
+          </div>
+          <div class="text-right">
+            <div class="text-3xl font-bold text-green-400">1.849 €</div>
+            <div class="text-white/40 text-xs mt-1">Gazole/L • MAJ 10:30</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <span class="glass-light rounded-lg px-3 py-1 text-white/80 text-sm">📍 1.4 km</span>
+        </div>
+      </div>
+      
+      <!-- Station 2 -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-white font-bold">Total Brie</h3>
+            <p class="text-white/50 text-sm mt-1">25 Rue Pasteur</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-white">1.999 €</div>
+            <div class="text-white/40 text-xs mt-1">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span class="glass-light rounded-lg px-2 py-1 text-white/70 text-xs">📍 0.7 km</span>
+          <span class="glass-light rounded-lg px-2 py-1 text-white/70 text-xs">SP95: 1.859€</span>
+          <span class="glass-light rounded-lg px-2 py-1 text-white/70 text-xs">E10: 1.749€</span>
+        </div>
+      </div>
+      
+      <!-- Station 3 -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-white font-bold">Intermarché Solers</h3>
+            <p class="text-white/50 text-sm mt-1">Zone Commerciale</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-white">2.039 €</div>
+            <div class="text-white/40 text-xs mt-1">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <span class="glass-light rounded-lg px-2 py-1 text-white/70 text-xs">📍 2.1 km</span>
+        </div>
+      </div>
+      
+      <!-- Station 4 -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-white font-bold">BP Lésigny</h3>
+            <p class="text-white/50 text-sm mt-1">Av des Hyvernaux</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold text-white">2.050 €</div>
+            <div class="text-white/40 text-xs mt-1">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <span class="glass-light rounded-lg px-2 py-1 text-white/70 text-xs">📍 5.4 km</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="text-center mt-8 text-white/40 text-sm">
+      Données: prix-carburants.gouv.fr · 10/03/2026 08:30
+    </footer>
+  </div>
+</body>
+</html>

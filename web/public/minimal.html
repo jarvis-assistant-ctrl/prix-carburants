@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test</title>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+  <h1>TEST PAGE</h1>
+  <div id="test">Loading...</div>
+  <script>
+    document.getElementById('test').innerHTML = 'JavaScript works!';
+    fetch('/api/health')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('test').innerHTML = 'API OK: ' + d.stationsLoaded + ' stations';
+      })
+      .catch(e => {
+        document.getElementById('test').innerHTML = 'API Error: ' + e.message;
+      });
+  </script>
+</body>
+</html>

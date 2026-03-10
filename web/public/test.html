@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Prix Carburants</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+    .card { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .trend { background: #e8f5e9; padding: 10px; margin-left: 10px; border-left: 3px solid #4caf50; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h1>⛽ Prix Carburants</h1>
+  
+  <div class="card">
+    <h3>Station Total - Paris 15e</h3>
+    <p>12 Rue de la Convention</p>
+    <p><strong>1.849 €/L</strong> - Gazole</p>
+    <span class="trend">📈 Tendance: HAUSSE (+2 cEUR/7j)</span>
+    <p style="font-size: 0.8em; color: #666;">Min: 1.799 € | Max: 1.892 € | Actuel: 1.849 €</p>
+  </div>
+
+  <div class="card">
+    <h3>Station BP - Paris 14</h3>
+    <p>25 Avenue du Maine</p>
+    <p><strong>1.899 €/L</strong> - Gazole</p>
+    <span class="trend">📉 Tendance: BAISSE (-1 cEUR/7j)</span>
+    <p style="font-size: 0.8em; color: #666;">Min: 1.850 € | Max: 1.950 € | Actuel: 1.899 €</p>
+  </div>
+
+  <hr>
+  <p><a href="/">← Retour à l'application</a></p>
+  
+  <script>
+    // Test API
+    fetch('/api/health')
+      .then(r => r.json())
+      .then(d => {
+        document.body.innerHTML += '<p style="color:green">✅ API OK: ' + d.stationsLoaded + ' stations</p>';
+      })
+      .catch(e => {
+        document.body.innerHTML += '<p style="color:red">❌ Erreur API: ' + e.message + '</p>';
+      });
+  </script>
+</body>
+</html>

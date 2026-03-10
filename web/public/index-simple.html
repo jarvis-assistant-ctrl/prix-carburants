@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prix Carburants - Stations pres de vous</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
+    .card { border: none; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .station-row { display: flex; gap: 0.5rem; }
+    .station-info { flex: 1; }
+    .station-trend { min-width: 120px; max-width: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0.5rem; border-left: 3px solid #e0e0e0; }
+    .trend-up { border-left-color: #dc3545; background: linear-gradient(90deg, #fff 0%, #ffebee 100%); }
+    .trend-down { border-left-color: #28a745; background: linear-gradient(90deg, #fff 0%, #e8f5e9 100%); }
+    .trend-stable { border-left-color: #6c757d; background: linear-gradient(90deg, #fff 0%, #f5f5f5 100%); }
+    .trend-bar { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; margin: 4px 0; }
+    .trend-bar-fill { height: 100%; border-radius: 3px; }
+  </style>
+</head>
+<body class="py-4">
+  <div class="container" style="max-width: 540px;">
+    <header class="text-center mb-4">
+      <h1 class="display-5 fw-bold mb-2">Prix Carburants</h1>
+      <p class="text-muted">Trouvez les stations les moins cheres pres de chez vous</p>
+    </header>
+    
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Parametres de recherche</h5>
+        
+        <div class="mb-3 position-relative">
+          <label class="form-label">Votre position</label>
+          <div class="input-group">
+            <input type="text" id="adresse" class="form-control" placeholder="Ex: Brie-Comte-Robert, 77170, Paris..." autocomplete="off">
+            <button class="btn btn-outline-secondary" type="button" onclick="geolocate()" title="GPS">
+              <i class="bi bi-crosshair"></i>
+            </button>
+          </div>
+          <div id="suggestions" class="list-group position-absolute w-100 shadow" style="z-index: 1000; max-height: 250px; overflow-y: auto; top: 100%;"></div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Type de carburant</label>
+          <select id="carburant" class="form-select">
+            <option value="Gazole">Gazole (Diesel)</option>
+            <option value="E10">E10 (SP95-E10)</option>
+            <option value="SP95">SP95</option>
+            <option value="SP98">SP98</option>
+            <option value="E85">E85</option>
+            <option value="GPLc">GPL</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label">Rayon de recherche</label>
+          <div class="d-flex align-items-center gap-3">
+            <input type="range" id="radius" class="form-range flex-grow-1" min="1" max="50" value="10">
+            <span id="radiusValue" class="badge bg-primary rounded-pill fs-6">10 km</span>
+          </div>
+        </div>
+        
+        <button id="searchBtn" class="btn btn-primary w-100" onclick="search()">
+          <i class="bi bi-geo-alt"></i> Trouver les stations
+        </button>
+      </div>
+    </div>
+    
+    <div id="stats" class="d-flex gap-2 mb-3" style="display: none !important;">
+      <span class="badge bg-secondary fs-6 p-2"><i class="bi bi-fuel-pump"></i> <span id="carburantLabel">Gazole</span></span>
+      <span class="badge bg-success fs-6 p-2"><i class="bi bi-check-circle"></i> <span id="countLabel">0 stations</span></span>
+    </div>
+    
+    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+    
+    <div id="stations" class="stations-list"></div>
+    
+    <footer class="text-center text-muted mt-4">
+      <small>Donnees: <a href="https://prix-carburants.gouv.fr" target="_blank">prix-carburants.gouv.fr</a></small>
+    </footer>
+  </div>
+
+  <script>
+    let userLat = null;
+    let userLon = null;
+    
+    document.getElementById('radius').addEventListener('input', function(e) {
+      document.getElementById('radiusValue').textContent = e.target.value + ' km';
+    });
+    
+    // Suggestions
+    const adresseInput = document.getElementById('adresse');
+    const suggestionsEl = document.getElementById('suggestions');
+    let currentSuggestions = [];
+    let selectedIndex = -1;
+    let debounceTimer = null;
+    
+    adresseInput.addEventListener('input', function(e) {
+      clearTimeout(debounceTimer);
+      const value = e.target.value.trim();
+      if (value.length < 3) { hideSuggestions(); return; }
+      debounceTimer = setTimeout(function() { fetchSuggestions(value); }, 300);
+    });
+    
+    function fetchSuggestions(q) {
+      fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(q) + '&limit=5')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          currentSuggestions = d.features || [];
+          selectedIndex = -1;
+          if (currentSuggestions.length === 0) { hideSuggestions(); return; }
+          suggestionsEl.innerHTML = currentSuggestions.map(function(s, i) {
+            return '<a class="list-group-item list-group-item-action" onclick="selectSuggestion(' + i + ')">' + s.properties.label + '</a>';
+          }).join('');
+          suggestionsEl.classList.add('show');
+        });
+    }
+    
+    function selectSuggestion(i) {
+      const s = currentSuggestions[i];
+      adresseInput.value = s.properties.label;
+      userLat = s.geometry.coordinates[1];
+      userLon = s.geometry.coordinates[0];
+      hideSuggestions();
+    }
+    
+    function hideSuggestions() { suggestionsEl.classList.remove('show'); }
+    
+    function geolocate() {
+      if (!navigator.geolocation) { alert('Geolocalisation non supportee'); return; }
+      navigator.geolocation.getCurrentPosition(function(p) {
+        userLat = p.coords.latitude;
+        userLon = p.coords.longitude;
+        adresseInput.value = userLat.toFixed(4) + ', ' + userLon.toFixed(4);
+      });
+    }
+    
+    function search() {
+      const adresse = adresseInput.value.trim();
+      const carburant = document.getElementById('carburant').value;
+      const radius = document.getElementById('radius').value;
+      const errorEl = document.getElementById('errorMessage');
+      const stationsEl = document.getElementById('stations');
+      const btn = document.getElementById('searchBtn');
+      
+      if (!adresse && !userLat) {
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Entrez une adresse';
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.textContent = 'Recherche...';
+      errorEl.style.display = 'none';
+      stationsEl.innerHTML = '';
+      
+      function doSearch(lat, lon) {
+        fetch('/api/stations/cheapest?lat=' + lat + '&lon=' + lon + '&radius=' + radius + '&carburant=' + carburant)
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.stations.length === 0) {
+              errorEl.style.display = 'block';
+              errorEl.textContent = 'Aucune station trouvee';
+              btn.disabled = false;
+              btn.textContent = 'Trouver les stations';
+              return;
+            }
+            document.getElementById('stats').style.display = 'flex';
+            document.getElementById('carburantLabel').textContent = carburant;
+            document.getElementById('countLabel').textContent = d.stations.length + ' stations';
+            
+            const minPrice = Math.min.apply(null, d.stations.map(function(s) { return s.carburantPrix.valeur; }));
+            d.stations.forEach(function(s) {
+              const isWinner = s.carburantPrix.valeur === minPrice;
+              stationsEl.appendChild(createCard(s, isWinner, carburant));
+            });
+            
+            loadTrends(d.stations.map(function(s) { return s.id; }), carburant);
+            btn.disabled = false;
+            btn.textContent = 'Trouver les stations';
+          });
+      }
+      
+      if (!userLat && adresse) {
+        fetch('https://api-adresse.data.gouv.fr/search/?q=' + encodeURIComponent(adresse) + '&limit=1')
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (!d.features.length) throw new Error('Adresse non trouvee');
+            userLat = d.features[0].geometry.coordinates[1];
+            userLon = d.features[0].geometry.coordinates[0];
+            doSearch(userLat, userLon);
+          });
+      } else {
+        doSearch(userLat, userLon);
+      }
+    }
+    
+    function createCard(s, isWinner, carburant) {
+      const card = document.createElement('div');
+      card.className = 'card mb-3' + (isWinner ? ' border-success' : '');
+      
+      const trendPlaceholder = '<div class="station-trend" id="trend-' + s.id + '"><div class="spinner-border spinner-border-sm"></div></div>';
+      
+      card.innerHTML = 
+        '<div class="card-body">' +
+          '<div class="station-row">' +
+            '<div class="station-info">' +
+              (isWinner ? '<span class="badge bg-success mb-1">Le moins cher</span>' : '') +
+              '<h6>' + (s.ville || 'Station') + '</h6>' +
+              '<p class="text-muted mb-1 small">' + (s.adresse || '') + '</p>' +
+              '<span class="badge bg-primary">' + formatDistance(s.distance) + '</span>' +
+            '</div>' +
+            '<div class="text-end">' +
+              '<h5>' + s.carburantPrix.valeur.toFixed(3) + '</h5>' +
+              '<small class="text-muted">' + carburant + '/L</small>' +
+            '</div>' +
+            trendPlaceholder +
+          '</div>' +
+        '</div>';
+      return card;
+    }
+    
+    function loadTrends(ids, carburant) {
+      fetch('/api/trends/' + carburant + '?lat=' + userLat + '&lon=' + userLon + '&radius=' + document.getElementById('radius').value)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          d.stations.forEach(function(s) {
+            const el = document.getElementById('trend-' + s.station_id);
+            if (!el) return;
+            let cls = 'trend-stable', icon = '➡️', txt = 'Stable';
+            if (s.trend === 'hausse') { cls = 'trend-up'; icon = '📈'; txt = 'Hausse'; }
+            else if (s.trend === 'baisse') { cls = 'trend-down'; icon = '📉'; txt = 'Baisse'; }
+            el.className = 'station-trend ' + cls;
+            el.innerHTML = '<div>' + icon + '</div><small>' + txt + '</small>' +
+              '<div class="trend-bar"><div class="trend-bar-fill" style="width:50%"></div></div>' +
+              '<small>Min: ' + (s.prix_min || s.prix_actuel).toFixed(3) + '</small>';
+          });
+        });
+    }
+    
+    function formatDistance(km) {
+      return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
+    }
+  </script>
+</body>
+</html>

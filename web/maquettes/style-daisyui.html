@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prix Carburants - DaisyUI</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200 min-h-screen">
+  <div class="max-w-2xl mx-auto p-4">
+    <!-- Header -->
+    <header class="text-center mb-6">
+      <h1 class="text-3xl font-bold text-base-content mb-2">⛽ Prix Carburants</h1>
+      <p class="text-base-content/70">Trouvez les stations les moins chères près de chez vous</p>
+    </header>
+    
+    <!-- Card recherche -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-lg mb-4">🔍 Paramètres de recherche</h2>
+        
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text font-medium">Type de carburant</span>
+          </label>
+          <select class="select select-bordered w-full">
+            <option>Gazole (Diesel)</option>
+            <option>E10</option>
+            <option>SP95</option>
+            <option>SP98</option>
+            <option>E85</option>
+            <option>GPL</option>
+          </select>
+        </div>
+        
+        <div class="form-control w-full mt-4">
+          <label class="label">
+            <span class="label-text font-medium">Rayon de recherche</span>
+            <span class="label-text-alt badge badge-primary">10 km</span>
+          </label>
+          <input type="range" min="1" max="50" value="10" class="range range-primary">
+        </div>
+        
+        <div class="card-actions justify-end mt-4">
+          <button class="btn btn-primary btn-block">
+            📍 Trouver les stations
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Badge stats -->
+    <div class="flex gap-2 mb-4">
+      <div class="badge badge-lg badge-neutral">📍 Position détectée</div>
+      <div class="badge badge-lg badge-success">✅ 24 stations trouvées</div>
+    </div>
+    
+    <!-- Station gagnante -->
+    <div class="card bg-success text-success-content shadow-xl mb-4">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="badge badge-outline badge-white mb-2">🏆 Moins cher</div>
+            <h3 class="card-title text-xl">Leclerc Brie-Comte-Robert</h3>
+            <p class="text-success-content/80">12 Rue Gustave Eiffel, 77170</p>
+          </div>
+          <div class="text-right">
+            <div class="text-4xl font-bold">1.849 €</div>
+            <div class="text-sm opacity-80">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <div class="badge badge-outline badge-lg">📍 1.4 km</div>
+          <div class="badge badge-outline badge-lg">🕐 MAJ 10:30</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Stations normales -->
+    <div class="card bg-base-100 shadow-xl mb-3">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="card-title">Total Brie</h3>
+            <p class="text-base-content/70 text-sm">25 Rue Pasteur, 77170</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold">1.999 €</div>
+            <div class="text-xs text-base-content/60">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1 mt-3">
+          <div class="badge badge-primary">📍 0.7 km</div>
+          <div class="badge badge-secondary">SP95: 1.859€</div>
+          <div class="badge badge-accent">E10: 1.749€</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card bg-base-100 shadow-xl mb-3">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="card-title">Intermarché Solers</h3>
+            <p class="text-base-content/70 text-sm">Zone Commerciale, 77170</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold">2.039 €</div>
+            <div class="text-xs text-base-content/60">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1 mt-3">
+          <div class="badge badge-neutral">📍 2.1 km</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card bg-base-100 shadow-xl mb-3">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="card-title">BP Lésigny</h3>
+            <p class="text-base-content/70 text-sm">Av des Hyvernaux, 77150</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-bold">2.050 €</div>
+            <div class="text-xs text-base-content/60">Gazole/L</div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1 mt-3">
+          <div class="badge badge-neutral">📍 5.4 km</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="text-center mt-8 text-base-content/60 text-sm">
+      <p>Données: <a class="link link-primary">prix-carburants.gouv.fr</a></p>
+      <p>Mise à jour: 10/03/2026 08:30</p>
+    </footer>
+  </div>
+</body>
+</html>
