@@ -11,6 +11,7 @@ const fetch = require('node-fetch');
 const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
 const db = require('./db');
+const enseignes = require('./enseignes');
 const path = require('path');
 const fs = require('fs');
 
@@ -202,10 +203,13 @@ app.get('/api/stations', async (req, res) => {
       carburant
     );
     
+    // Enrichir avec les noms d'enseignes
+    const enrichedStations = await enseignes.enrichirStations(stations.slice(0, 50));
+    
     res.json({
       count: stations.length,
       lastUpdate: lastUpdate,
-      stations: stations.slice(0, 50) // Max 50 résultats
+      stations: enrichedStations
     });
     
   } catch (error) {
@@ -447,6 +451,14 @@ async function start() {
     // Pré-charger les données au démarrage
     await refreshData();
     console.log('📥 Données prix-carburants chargées');
+    
+    // Pré-charger les enseignes (noms des stations)
+    if (stationsCache && stationsCache.length > 0) {
+      console.log('🏷️ Pré-chargement des enseignes...');
+      enseignes.preloadEnseignes(stationsCache).catch(err => 
+        console.error('⚠️ Erreur préchargement enseignes:', err.message)
+      );
+    }
     
     // Sauvegarder les prix pour l'historique (Gazole par défaut)
     if (stationsCache && stationsCache.length > 0) {
