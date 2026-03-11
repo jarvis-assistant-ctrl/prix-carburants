@@ -1,0 +1,14 @@
+{
+  "_comment": "Mapping manuel des enseignes Île-de-France",
+  "_updated": "2026-03-11",
+  "_source": "Adresses et noms de stations - extraction automatique",
+  
+  "77141001": { "enseigne": "Total", "source": "adresse: STATION TOTAL" },
+  "77140012": { "enseigne": "Total", "source": "aire autoroute A6" },
+  "78710005": { "enseigne": "Total", "source": "aire autoroute A13" },
+  "77229001": { "enseigne": "E.Leclerc", "source": "adresse: CC E.Leclerc" },
+  "93110005": { "enseigne": "Total", "source": "adresse: TOTAL" },
+  
+  "_note": "Stations identifiées via adresse ou nom",
+  "_format": "ID: { enseigne: \"Nom\", source: \"commentaire\" }"
+}

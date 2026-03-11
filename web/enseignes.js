@@ -10,12 +10,14 @@ const fs = require('fs');
 const path = require('path');
 
 const CACHE_FILE = path.join(__dirname, 'data', 'enseignes-cache.json');
+const MANUAL_FILE = path.join(__dirname, 'data', 'manual-enseignes-idf.json');
 const OVERPASS_APIS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter'
 ];
 
 let cache = {};
+let manualMapping = {};
 let lastSave = 0;
 
 /**
@@ -31,6 +33,28 @@ function loadCache() {
   } catch (e) {
     console.log('⚠️ Impossible de charger le cache enseignes:', e.message);
     cache = {};
+  }
+}
+
+/**
+ * Charge le mapping manuel
+ */
+function loadManualMapping() {
+  try {
+    if (fs.existsSync(MANUAL_FILE)) {
+      const data = fs.readFileSync(MANUAL_FILE, 'utf8');
+      const raw = JSON.parse(data);
+      // Filtrer les clés qui commencent par "_" (commentaires)
+      Object.keys(raw).forEach(key => {
+        if (!key.startsWith('_')) {
+          manualMapping[key] = raw[key];
+        }
+      });
+      console.log(`✅ Mapping manuel chargé: ${Object.keys(manualMapping).length} stations IDF`);
+    }
+  } catch (e) {
+    console.log('⚠️ Impossible de charger le mapping manuel:', e.message);
+    manualMapping = {};
   }
 }
 
@@ -87,21 +111,35 @@ async function queryOverpass(query, retries = 2) {
 
 /**
  * Récupère les enseignes par IDs exacts (ref:FR:prix-carburants)
- * Plus efficace que la recherche par coordonnées
+ * Ordre de priorité: 1. Mapping manuel, 2. Cache OSM, 3. Requête Overpass
  */
 async function getEnseignesByIds(stationIds) {
-  const uncached = stationIds.filter(id => !cache[id]);
-  if (uncached.length === 0) {
-    // Toutes les stations sont en cache
-    const result = {};
-    stationIds.forEach(id => result[id] = cache[id]);
+  // 1. Stations avec mapping manuel (priorité)
+  const result = {};
+  const needsLookup = [];
+  
+  stationIds.forEach(id => {
+    if (manualMapping[id]) {
+      result[id] = {
+        enseigne: manualMapping[id].enseigne,
+        source: 'manual'
+      };
+    } else if (cache[id]) {
+      result[id] = cache[id];
+    } else {
+      needsLookup.push(id);
+    }
+  });
+  
+  // Si tout est dans le manuel ou le cache, retourner
+  if (needsLookup.length === 0) {
     return result;
   }
 
-  console.log(`🔍 Recherche enseignes pour ${uncached.length} stations...`);
+  console.log(`🔍 Recherche enseignes pour ${needsLookup.length} stations...`);
   
-  // Requête Overpass pour les IDs non cachés (nodes ET ways)
-  const idsList = uncached.join('|');
+  // 3. Requête Overpass pour les IDs non trouvés
+  const idsList = needsLookup.join('|');
   const query = `[out:json][timeout:30];(node["ref:FR:prix-carburants"~"^(${idsList})$"];way["ref:FR:prix-carburants"~"^(${idsList})$"];);out tags center;`;
   
   try {
@@ -121,7 +159,7 @@ async function getEnseignesByIds(stationIds) {
     }
     
     // Marquer les stations non trouvées pour éviter les requêtes répétées
-    for (const id of uncached) {
+    for (const id of needsLookup) {
       if (!cache[id]) {
         cache[id] = { brand: null, name: null, enseigne: 'Station indépendante' };
       }
@@ -136,9 +174,11 @@ async function getEnseignesByIds(stationIds) {
     console.log('⚠️ Erreur récupération enseignes:', e.message);
   }
   
-  // Retourner les résultats
-  const result = {};
-  stationIds.forEach(id => result[id] = cache[id] || { enseigne: 'Station indépendante' });
+  // Ajouter les résultats Overpass au résultat final
+  for (const id of needsLookup) {
+    result[id] = cache[id] || { enseigne: 'Station indépendante' };
+  }
+  
   return result;
 }
 
@@ -234,6 +274,7 @@ async function preloadEnseignes(stations) {
 
 // Initialiser le cache au chargement
 loadCache();
+loadManualMapping();
 
 module.exports = {
   getEnseignesByIds,

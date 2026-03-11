@@ -3,7 +3,8 @@ node_modules/
 
 # Database
 *.db
-data/
+data/*.json
+!data/manual-enseignes-idf.json
 
 # Logs
 *.log
