@@ -21,7 +21,22 @@
   "77500009": { "enseigne": "TotalEnergies", "source": "Google Maps: Chelles, 119 Av. Gendarme Castermant" },
   "77170006": { "enseigne": "Hyper U", "source": "Google Maps: Brie-Comte-Robert, 12 Rue Gustave Eiffel" },
   "77170005": { "enseigne": "Carrefour", "source": "Google Maps: Brie-Comte-Robert, 25 Rue Pasteur" },
+  "77100009": { "enseigne": "E.Leclerc", "source": "Google Maps: Meaux, Rue Georges Claude" },
+  "77100008": { "enseigne": "Esso Express", "source": "Google Maps: Meaux, Av. Président Salvador Allende" },
+  "77100022": { "enseigne": "TotalEnergies", "source": "Google Maps: Meaux, Rue François de Tessan" },
+  "77100010": { "enseigne": "TotalEnergies", "source": "Google Maps: Meaux, 81 Av. Président Roosevelt" },
+  "77460001": { "enseigne": "TotalEnergies", "source": "Google Maps: Souppes-sur-Loing, 115 Av. Maréchal Leclerc" },
+  "77460004": { "enseigne": "Avia XPress", "source": "Google Maps: Souppes-sur-Loing, 32 Rue Pasteur" },
+  "77460005": { "enseigne": "Super U", "source": "Google Maps: Souppes-sur-Loing, Rte d'Egreville" },
+  "77330004": { "enseigne": "TotalEnergies", "source": "Google Maps: Ozoir-la-Ferrière, RN4" },
+  "77330003": { "enseigne": "E.Leclerc", "source": "Google Maps: Ozoir-la-Ferrière, 84 Rue François de Tessan" },
+  "77330002": { "enseigne": "AVIA", "source": "Google Maps: Ozoir-la-Ferrière, 2 Av. Édouard Gourdon" },
+  "77120006": { "enseigne": "TotalEnergies", "source": "Google Maps: Coulommiers, Av. de Strasbourg" },
+  "77120007": { "enseigne": "TotalEnergies", "source": "Google Maps: Coulommiers, Av. Victor Hugo" },
+  "77160004": { "enseigne": "ENI", "source": "Google Maps: Provins, 16 Av. du Général de Gaulle" },
+  "77140010": { "enseigne": "TotalEnergies", "source": "Google Maps: Nemours, Aire A6 Nemours Ouest" },
+  "77140003": { "enseigne": "Super U", "source": "Google Maps: Saint-Pierre-lès-Nemours, Route de Larchant" },
   
-  "_note": "17 stations identifiées manuellement (Seine-et-Marne focus)",
+  "_note": "32 stations identifiées manuellement (Seine-et-Marne focus)",
   "_format": "ID: { enseigne: \"Nom\", source: \"commentaire\" }"
 }
