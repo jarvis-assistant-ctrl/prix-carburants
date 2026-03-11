@@ -1,7 +1,7 @@
 {
   "_comment": "Mapping manuel des enseignes Île-de-France",
-  "_updated": "2026-03-11",
-  "_source": "Adresses et noms de stations - extraction automatique",
+  "_updated": "2026-03-11 22:20",
+  "_source": "Google Maps + adresses",
   
   "77141001": { "enseigne": "Total", "source": "adresse: STATION TOTAL" },
   "77140012": { "enseigne": "Total", "source": "aire autoroute A6" },
@@ -9,6 +9,19 @@
   "77229001": { "enseigne": "E.Leclerc", "source": "adresse: CC E.Leclerc" },
   "93110005": { "enseigne": "Total", "source": "adresse: TOTAL" },
   
-  "_note": "Stations identifiées via adresse ou nom",
+  "77320002": { "enseigne": "Intermarché", "source": "Google Maps: La Ferté-Gaucher" },
+  "77120003": { "enseigne": "E.Leclerc", "source": "Google Maps: Coulommiers" },
+  "77000013": { "enseigne": "TotalEnergies", "source": "Google Maps: La Rochette" },
+  "77000014": { "enseigne": "Intermarché", "source": "Google Maps: Vaux-le-Pénil" },
+  "77340009": { "enseigne": "E.Leclerc", "source": "Google Maps: Pontault-Combault" },
+  "77600003": { "enseigne": "TotalEnergies", "source": "Google Maps: Bussy-St-Georges, Aire A4" },
+  "77164001": { "enseigne": "Intermarché", "source": "Google Maps: Ferrières-en-Brie" },
+  "77500004": { "enseigne": "Intermarché", "source": "Google Maps: Chelles, rte de Montfermeil" },
+  "77500001": { "enseigne": "Auchan", "source": "Google Maps: Chelles, ZI Belle-Ile" },
+  "77500009": { "enseigne": "TotalEnergies", "source": "Google Maps: Chelles, 119 Av. Gendarme Castermant" },
+  "77170006": { "enseigne": "Hyper U", "source": "Google Maps: Brie-Comte-Robert, 12 Rue Gustave Eiffel" },
+  "77170005": { "enseigne": "Carrefour", "source": "Google Maps: Brie-Comte-Robert, 25 Rue Pasteur" },
+  
+  "_note": "17 stations identifiées manuellement (Seine-et-Marne focus)",
   "_format": "ID: { enseigne: \"Nom\", source: \"commentaire\" }"
 }
