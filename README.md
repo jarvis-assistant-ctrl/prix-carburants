@@ -103,14 +103,16 @@ Sources/
 
 ## ✅ État actuel
 
-### Web (v1.1.0)
+### Web (v1.1.1) - **EN LIGNE** 🌐
 - [x] Serveur Express + API
 - [x] Parsing XML/ZIP officiel
 - [x] Interface responsive
 - [x] Filtrage par carburant et rayon
 - [x] Historique des prix par station
 - [x] Collecte automatique horaire (à l'heure pile)
-- [x] Service systemd autonome
+- [x] Service Docker sur VPS OVH
+- [x] HTTPS Let's Encrypt valide
+- [x] Géolocalisation mobile fonctionnelle
 - [ ] Carte interactive
 
 ### iOS (v0.1)

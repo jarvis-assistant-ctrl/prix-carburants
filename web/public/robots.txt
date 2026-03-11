@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /api/stations
+Allow: /api/health
+Disallow: /api/history
+
+Sitemap: https://prix-carburant.webhop.net/sitemap.xml

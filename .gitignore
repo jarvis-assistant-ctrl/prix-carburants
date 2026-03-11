@@ -39,3 +39,9 @@ Sources/.build/
 # Temporary
 tmp/
 temp/
+
+# HTTPS certificates (Let's Encrypt)
+web/cert.pem
+web/key.pem
+web/fullchain.pem
+web/privkey.pem

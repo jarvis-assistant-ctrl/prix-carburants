@@ -2,10 +2,20 @@
 
 ## Statut
 - **Collecte automatique** : ✅ OK
-  - Cron toutes les heures (prix-carburants-collect)
   - Source : `https://donnees.roulez-eco.fr/opendata/instantane`
-  - 9832 stations, 6 carburants
+  - 9837 stations, 6 carburants
   - Historique SQLite : 33k+ entrées
+
+### Déploiement VPS OVH
+- **Statut** : ✅ **OPÉRATIONNEL avec HTTPS** (11/03/2026 19:39)
+- **URL** : `https://prix-carburant.webhop.net/`
+- **API** : `https://prix-carburant.webhop.net/api/`
+- **Container** : healthy
+- **Ports** : 80→HTTPS, 443 (nginx) → 3200 (app)
+- **Données** : 9837 stations chargées
+- **Certificat SSL** : Let's Encrypt (expire 09/06/2026)
+- **Health check** : curl (fixé, docker-compose.yml corrigé)
+- **Géolocalisation mobile** : ✅ Fonctionne (HTTPS valide)
 
 ## TODO
 
