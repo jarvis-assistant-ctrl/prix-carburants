@@ -47,25 +47,39 @@ function saveCache() {
 }
 
 /**
- * Requête Overpass API avec fallback
+ * Requête Overpass API avec fallback et retry
  */
-async function queryOverpass(query) {
+async function queryOverpass(query, retries = 2) {
   for (const api of OVERPASS_APIS) {
-    try {
-      const response = await fetch(api, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `data=${encodeURIComponent(query)}`,
-        timeout: 15000
-      });
-      
-      if (!response.ok) continue;
-      
-      const data = await response.json();
-      return data.elements || [];
-    } catch (e) {
-      console.log(`⚠️ Erreur Overpass (${api}):`, e.message);
-      continue;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);  // 10s timeout
+        
+        const response = await fetch(api, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `data=${encodeURIComponent(query)}`,
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          if (attempt < retries) continue;
+          continue;  // Essayer l'autre API
+        }
+        
+        const data = await response.json();
+        return data.elements || [];
+      } catch (e) {
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 500));  // Retry après 500ms
+          continue;
+        }
+        console.log(`⚠️ Erreur Overpass (${api}):`, e.message);
+        continue;  // Essayer l'autre API
+      }
     }
   }
   return [];
@@ -181,18 +195,36 @@ async function getEnseigneByCoords(lat, lon, radius = 500) {
 async function preloadEnseignes(stations) {
   loadCache();
   
-  // Traiter par lots de 100 pour éviter le timeout
-  const batchSize = 100;
+  // Traiter par lots plus grands avec parallélisme
+  const batchSize = 200;  // Augmenté de 100 à 200
   const allIds = stations.map(s => s.id);
+  const parallelRequests = 3;  // 3 requêtes parallèles
   
-  for (let i = 0; i < allIds.length; i += batchSize) {
-    const batch = allIds.slice(i, i + batchSize);
-    await getEnseignesByIds(batch);
-    console.log(`📊 Enseignes: ${i + batch.length}/${allIds.length}`);
+  // Filtrer les déjà en cache
+  const uncached = allIds.filter(id => !cache[id]);
+  console.log(`📊 ${uncached.length} stations à enrichir`);
+  
+  // Traiter en parallèle par lots
+  const batches = [];
+  for (let i = 0; i < uncached.length; i += batchSize) {
+    batches.push(uncached.slice(i, i + batchSize));
+  }
+  
+  let processed = allIds.length - uncached.length;
+  
+  // Exécuter 3 requêtes en parallèle
+  for (let i = 0; i < batches.length; i += parallelRequests) {
+    const parallelBatches = batches.slice(i, i + parallelRequests);
     
-    // Pause entre les lots pour ne pas surcharger l'API
-    if (i + batchSize < allIds.length) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+    await Promise.all(parallelBatches.map(async (batch, idx) => {
+      await getEnseignesByIds(batch);
+      processed += batch.length;
+      console.log(`📊 Enseignes: ${processed}/${allIds.length}`);
+    }));
+    
+    // Pause minimale entre les vagues (500ms au lieu de 2000ms)
+    if (i + parallelRequests < batches.length) {
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
   

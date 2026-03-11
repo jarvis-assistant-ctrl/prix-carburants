@@ -252,10 +252,20 @@ app.get('/api/stations/cheapest', async (req, res) => {
       .filter(s => s.carburantPrix)
       .sort((a, b) => a.carburantPrix.valeur - b.carburantPrix.valeur);
     
+    // Enrichir avec les enseignes depuis le cache
+    const top20 = withPrice.slice(0, 20);
+    const stationIds = top20.map(s => s.id);
+    const enseignesData = await enseignes.getEnseignesByIds(stationIds);
+    
+    const enrichedStations = top20.map(station => ({
+      ...station,
+      enseigne: enseignesData[station.id]?.enseigne || null
+    }));
+    
     res.json({
       carburant,
       count: withPrice.length,
-      stations: withPrice.slice(0, 20)
+      stations: enrichedStations
     });
     
   } catch (error) {
