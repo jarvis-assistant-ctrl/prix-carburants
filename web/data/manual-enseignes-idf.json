@@ -36,7 +36,14 @@
   "77160004": { "enseigne": "ENI", "source": "Google Maps: Provins, 16 Av. du Général de Gaulle" },
   "77140010": { "enseigne": "TotalEnergies", "source": "Google Maps: Nemours, Aire A6 Nemours Ouest" },
   "77140003": { "enseigne": "Super U", "source": "Google Maps: Saint-Pierre-lès-Nemours, Route de Larchant" },
+  "77100015": { "enseigne": "Intermarché", "source": "Google Maps: Nanteuil-lès-Meaux, Avenue de la Foulée" },
+  "77144001": { "enseigne": "TotalEnergies", "source": "Google Maps: Montévrain, Bd Charles de Gaulle" },
+  "77130005": { "enseigne": "TotalEnergies", "source": "Google Maps: Varennes-sur-Seine, Av. du 8 Mai 1945" },
+  "77130012": { "enseigne": "TotalEnergies", "source": "Google Maps: Forges, A5 Aire des Jonchets" },
+  "77140006": { "enseigne": "E.Leclerc", "source": "Google Maps: Nemours, 1 rue JM Jacquard" },
+  "77100014": { "enseigne": "Intermarché", "source": "Google Maps: Moret-Loing, Av. des Champs" },
+  "77100011": { "enseigne": "TotalEnergies", "source": "Google Maps: Moret-Loing, Av. de la République" },
   
-  "_note": "32 stations identifiées manuellement (Seine-et-Marne focus)",
+  "_note": "40 stations identifiées manuellement (Seine-et-Marne focus)",
   "_format": "ID: { enseigne: \"Nom\", source: \"commentaire\" }"
 }
