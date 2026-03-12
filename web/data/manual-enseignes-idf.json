@@ -211,5 +211,8 @@
   "77410001": { "enseigne": "TotalEnergies", "source": "Google Maps: Aire de Villevaude, 9 Rue Andre Citroen" },
   "77870002": { "enseigne": "Auchan", "source": "Google Maps: 44 Route d'Hericy, Vulaines-sur-Seine" },
   
-  "_not_found_lot9": "77240001 (Ave General de Gaulle), 77170002 (ZAC Mare Adam), 77300002 (RN 14 - CP incoherent)"
+  "_not_found_lot9": "77240001 (Ave General de Gaulle), 77170002 (ZAC Mare Adam), 77300002 (RN 14 - CP incoherent)",
+  
+  "_note14": "Lot 10 stations Seine-et-Marne (77340-77700) - 3 restantes",
+  "_not_found_lot10": "77700003 (Route de Cannes Ecluses), 77650001 (Route de la Celle), 77340003 (CD 51)"
 }
