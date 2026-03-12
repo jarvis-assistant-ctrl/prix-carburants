@@ -160,5 +160,12 @@
   "77200001": { "enseigne": "TotalEnergies", "source": "Google Maps: RELAIS FONTAINEBLEAU AVON, 11 Rue de Paris" },
   "77210001": { "enseigne": "Carrefour Market", "source": "Google Maps: 73 Avenue du Président Franklin Roosevelt" },
   
-  "_not_found_lot4": "77190006, 77195001 - CP non valides"
+  "_not_found_lot4": "77190006, 77195001 - CP non valides",
+  
+  "_note9": "Lot 5 stations Seine-et-Marne (77230-77680)",
+  "77550004": { "enseigne": "TotalEnergies", "source": "Google Maps: Aire de Galande A5B" },
+  "77680004": { "enseigne": "Intermarché", "source": "Google Maps: Roissy-en-Brie, Place Robert Schuman" },
+  "77230001": { "enseigne": "Carrefour", "source": "Google Maps: Saint-Mard, HyperCarrefour Station Essence Libre Service" },
+  
+  "_not_found_lot5": "77230002 (Zone Industrielle), 77240001 (CP 77240), 77240004, 77240005 - adresses non valides"
 }
