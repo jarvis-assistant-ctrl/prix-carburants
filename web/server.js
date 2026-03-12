@@ -59,20 +59,11 @@ app.use('/api', (req, res, next) => {
 // Servir les fichiers statiques (stats.html, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Compteur de requêtes pour les stats
+// Compteur de requêtes pour les stats (ignore /api/stats)
 app.use('/api', (req, res, next) => {
-  stats.recordRequest(req.path);
-  next();
-});
-
-// Route pour les stats
-app.get('/api/stats', (req, res) => {
-  res.json(stats.get());
-});
-
-// Compteur de requêtes pour les stats
-app.use('/api', (req, res, next) => {
-  stats.recordRequest(req.path);
+  if (req.path !== '/stats') {
+    stats.recordRequest(req.path);
+  }
   next();
 });
 
