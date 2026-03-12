@@ -182,5 +182,17 @@
   "77690001": { "enseigne": "Station indépendante", "source": "Google Maps: Station Service de Montigny, 22 Rue du Poirier de Fromie, Montigny-sur-Loing" },
   "77760001": { "enseigne": "Avia", "source": "Google Maps: Rue de l'Avenir, La Chapelle-la-Reine" },
   
-  "_not_found_lot6": "77720002 - les Chaumes RN19 non trouvée"
+  "_not_found_lot6": "77720002 - les Chaumes RN19 non trouvée",
+  
+  "_note11": "Lot 7 stations Seine-et-Marne (77500-77880)",
+  "77116001": { "enseigne": "E.Leclerc", "source": "Google Maps: Aire d'Achères Est A6" },
+  "77270001": { "enseigne": "E.Leclerc", "source": "Google Maps: 20-22 Av. Roger Salengro, Villeparisis" },
+  "77340006": { "enseigne": "TotalEnergies", "source": "Google Maps: 6-10 Av. Charles Rouxel, Pontault-Combault" },
+  "77390005": { "enseigne": "TotalEnergies", "source": "Google Maps: RD 619, RELAIS PORTES DE YEBLES" },
+  "77480002": { "enseigne": "Carrefour", "source": "Google Maps: 82 Av. de la Libération, Bray-sur-Seine" },
+  "77500008": { "enseigne": "BP", "source": "Google Maps: 20 Av. de Claye, Chelles" },
+  "77510001": { "enseigne": "Carrefour", "source": "Google Maps: ZAC PRE ANCEL, Rebais" },
+  "77610002": { "enseigne": "Intermarché", "source": "Google Maps: Rue Bertaux, Fontenay-Trésigny" },
+  "77620001": { "enseigne": "U Express", "source": "Google Maps: Route de Lorrez, Lorrez-le-Bocage-Préaux" },
+  "77880001": { "enseigne": "Esso", "source": "Google Maps: RN 7, Viry-Châtillon" }
 }
