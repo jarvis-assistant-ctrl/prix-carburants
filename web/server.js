@@ -27,6 +27,11 @@ function isInMaintenance() {
 }
 
 app.use((req, res, next) => {
+  // Allow maintenance API through
+  if (req.path === '/api/maintenance' || req.path.startsWith('/api/health')) {
+    return next();
+  }
+  
   if (isInMaintenance() && !req.path.startsWith('/api/health')) {
     // Pages de maintenance pour HTML
     if (req.accepts('html')) {
