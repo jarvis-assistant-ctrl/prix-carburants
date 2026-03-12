@@ -121,6 +121,45 @@ app.use('/api', (req, res, next) => {
 // Servir les fichiers statiques (stats.html, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ========== AUTHENTIFICATION STATS ==========
+const STATS_PASSWORD = process.env.STATS_PASSWORD || 'jarvis2026';
+
+// Middleware auth pour stats
+function authStats(req, res, next) {
+  // Accepter le password via query param ou header
+  const password = req.query.password || req.headers['x-stats-password'];
+  if (password === STATS_PASSWORD) {
+    return next();
+  }
+  
+  // Si HTML demandé, afficher formulaire
+  if (req.path.endsWith('.html') || req.path === '/stats') {
+    return res.send(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head><meta charset="UTF-8"><title>Stats - Authentification</title></head>
+      <body style="font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f7fa;">
+        <form method="GET" style="background:white;padding:2rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+          <h2 style="margin-bottom:1rem;color:#16213e;">📊 Accès Stats</h2>
+          <input type="password" name="password" placeholder="Mot de passe" style="padding:0.5rem;border:1px solid #ddd;border-radius:6px;margin-right:0.5rem;">
+          <button style="padding:0.5rem 1rem;background:#667eea;color:white;border:none;border-radius:6px;cursor:pointer;">Accéder</button>
+        </form>
+      </body>
+      </html>
+    `);
+  }
+  
+  res.status(401).json({ error: 'Non autorisé. Ajoutez ?password=XXX' });
+}
+
+// Protéger la page stats
+app.get('/stats.html', authStats, (req, res, next) => next());
+
+// Protéger l'API stats
+app.get('/api/stats', authStats, (req, res, next) => next());
+
+// ========== FIN AUTHENTIFICATION ==========
+
 // Compteur de requêtes pour les stats (ignore /api/stats)
 app.use('/api', (req, res, next) => {
   if (req.path !== '/stats') {
