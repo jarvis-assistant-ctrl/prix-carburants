@@ -18,6 +18,71 @@ const fs = require('fs');
 
 const VERSION = require('./package.json').version;
 const app = express();
+
+// ========== MODE MAINTENANCE ==========
+const MAINTENANCE_FILE = path.join(__dirname, '.maintenance');
+
+function isInMaintenance() {
+  return fs.existsSync(MAINTENANCE_FILE) || process.env.MAINTENANCE_MODE === 'true';
+}
+
+app.use((req, res, next) => {
+  if (isInMaintenance() && !req.path.startsWith('/api/health')) {
+    // Pages de maintenance pour HTML
+    if (req.accepts('html')) {
+      return res.status(503).send(`
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance - Prix Carburants</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .container { background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; max-width: 400px; }
+    h1 { color: #16213e; margin: 0 0 1rem; }
+    p { color: #64748b; margin: 0 0 1.5rem; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .small { font-size: 0.85rem; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h1>🔧 Maintenance en cours</h1>
+    <p>L'application est temporairement indisponible pour une mise à jour.</p>
+    <p class="small">Réessayez dans quelques minutes.</p>
+  </div>
+</body>
+</html>`);
+    }
+    return res.status(503).json({ error: 'Maintenance en cours. Réessayez dans quelques minutes.' });
+  }
+  next();
+});
+
+// Activer/désactiver la maintenance via API (protégé par mot de passe)
+app.post('/api/maintenance', express.json(), (req, res) => {
+  const { password, enabled } = req.body;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'jarvis2026';
+  
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Non autorisé' });
+  }
+  
+  if (enabled) {
+    fs.writeFileSync(MAINTENANCE_FILE, new Date().toISOString());
+    res.json({ message: 'Mode maintenance activé', maintenance: true });
+  } else {
+    if (fs.existsSync(MAINTENANCE_FILE)) {
+      fs.unlinkSync(MAINTENANCE_FILE);
+    }
+    res.json({ message: 'Mode maintenance désactivé', maintenance: false });
+  }
+});
+
+// ========== FIN MODE MAINTENANCE ==========
 const HTTP_PORT = process.env.HTTP_PORT || 3200;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3201;
 const HOST = process.env.HOST || '0.0.0.0';
