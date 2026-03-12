@@ -90,8 +90,20 @@
     const STATS_PASSWORD = 'jarvis2026';
     const app = document.getElementById('app');
     
-    // Vérifier le password dans localStorage
+    // Vérifier le password dans localStorage (avec timeout 1h)
+    const STATS_PASSWORD = 'jarvis2026';
+    const TIMEOUT_MS = 60 * 60 * 1000; // 1 heure
+    
     let password = localStorage.getItem('stats_password');
+    const lastAuth = parseInt(localStorage.getItem('stats_auth_time') || '0');
+    const now = Date.now();
+    
+    // Si timeout expiré, effacer le password
+    if (password && (now - lastAuth > TIMEOUT_MS)) {
+        localStorage.removeItem('stats_password');
+        localStorage.removeItem('stats_auth_time');
+        password = null;
+    }
     
     if (!password) {
         // Afficher le formulaire de login
@@ -112,6 +124,7 @@
         const pwd = document.getElementById('pwd').value;
         if (pwd === STATS_PASSWORD) {
             localStorage.setItem('stats_password', pwd);
+            localStorage.setItem('stats_auth_time', Date.now().toString());
             password = pwd;
             showStats();
         } else {
