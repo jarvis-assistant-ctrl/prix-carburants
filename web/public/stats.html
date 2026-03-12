@@ -145,10 +145,11 @@
                 values.push(data.hourly[`${h}h-${h+1}h`] || 0);
             }
 
-            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            const canvas = document.getElementById('hourlyChart');
+            const ctx = canvas.getContext('2d');
             
-            // Détruire l'ancien graphique s'il existe
-            if (window.hourlyChart) {
+            // Détruire l'ancien graphique s'il existe ET est un Chart
+            if (window.hourlyChart && typeof window.hourlyChart.destroy === 'function') {
                 window.hourlyChart.destroy();
             }
             
