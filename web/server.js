@@ -43,6 +43,68 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 heure
 const API_URL = 'https://donnees.roulez-eco.fr/opendata/instantane';
 
 // Middleware
+// SEO - Meta tags dynamiques pour les robots
+app.get('/', (req, res) => {
+  const metaConfig = {
+    title: 'Prix Carburants - Trouvez les stations les moins chères près de chez vous',
+    description: 'Comparez les prix des carburants en temps réel. Trouvez les stations-service les moins chères près de chez vous. Gazole, E10, SP95, SP98, E85, GPL. Données officielles gouvernement.',
+    url: 'https://prix-carburant.webhop.net/',
+    keywords: 'prix carburants, essence, diesel, gazole, station-service, carburant pas cher, prix essence, prix diesel, E10, SP95, SP98, E85, GPL, station essence'
+  };
+  
+  // Servir l'index avec meta tags optimisés
+  res.send(generateMetaHtml(metaConfig));
+});
+
+// Page SEO pour les recherches populaires
+app.get('/stations-pas-cheres', (req, res) => {
+  const metaConfig = {
+    title: 'Stations-service les moins chères - Prix Carburants',
+    description: 'Trouvez les stations-service les moins chères en France. Prix en temps réel pour le Gazole, E10, SP95, SP98, E85 et GPL. Comparateur gratuit.',
+    url: 'https://prix-carburant.webhop.net/stations-pas-cheres',
+    keywords: 'station essence pas chère, carburant le moins cher, prix carburant comparateur, essence discount, diesel pas cher'
+  };
+  res.send(generateMetaHtml(metaConfig));
+});
+
+function generateMetaHtml(config) {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${config.title}</title>
+  
+  <!-- SEO Meta -->
+  <meta name="description" content="${config.description}">
+  <meta name="keywords" content="${config.keywords}">
+  <meta name="author" content="Prix Carburants">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="${config.url}">
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${config.url}">
+  <meta property="og:title" content="${config.title}">
+  <meta property="og:description" content="${config.description}">
+  <meta property="og:locale" content="fr_FR">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${config.title}">
+  <meta name="twitter:description" content="${config.description}">
+  
+  <meta http-equiv="refresh" content="0;url=/">
+</head>
+<body>
+  <h1>${config.title}</h1>
+  <p>${config.description}</p>
+  <script>window.location.href = '/';</script>
+</body>
+</html>`;
+}
+
 app.use(express.static('public'));
 app.use(express.json());
 
