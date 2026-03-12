@@ -138,5 +138,18 @@
   "77141003": { "enseigne": "AVIA", "source": "Google Maps: RN4 (incertain)" },
   "77144002": { "enseigne": "TotalEnergies", "source": "Google Maps: Montévrain, 34 Route de Provins" },
   
-  "_not_found": "77000003, 77120004, 77130003 - à vérifier"
+  "_not_found": "77000003, 77120004, 77130003 - à vérifier",
+  
+  "_note8": "Lot 3 stations Seine-et-Marne (77150-77184)",
+  "77150003": { "enseigne": "Carrefour", "source": "Google Maps: Lésigny, Centre commercial de la Fontaine" },
+  "77160003": { "enseigne": "Carrefour Market", "source": "Google Maps: Provins, 15 Av du Maréchal de Lattre de Tassigny" },
+  "77164002": { "enseigne": "Intermarché", "source": "Google Maps: Ferrières-en-Brie, ZAC des Hauts de Ferrières" },
+  "77170013": { "enseigne": "TotalEnergies", "source": "Google Maps: Brie-Comte-Robert, 5 Rue du Général Leclerc" },
+  "77170004": { "enseigne": "TotalEnergies", "source": "Google Maps: Brie-Comte-Robert, 7 Rue du Général Leclerc" },
+  "77171003": { "enseigne": "Carrefour Market", "source": "Google Maps: Villenoy, 38 Rue de Paris" },
+  "77181002": { "enseigne": "TotalEnergies", "source": "Google Maps: Relais du Pin, Route de Chelles" },
+  "77182001": { "enseigne": "BP", "source": "Google Maps: Aire de la Voulgonne, A5" },
+  "77184002": { "enseigne": "Carrefour", "source": "Google Maps: Boussy-Saint-Antoine, Centre Commercial Val d'Yerres" },
+  
+  "_remaining_lot3": "77183002 - AIRE DE REPOS A4 non trouvée"
 }
