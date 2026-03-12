@@ -194,5 +194,14 @@
   "77510001": { "enseigne": "Carrefour", "source": "Google Maps: ZAC PRE ANCEL, Rebais" },
   "77610002": { "enseigne": "Intermarché", "source": "Google Maps: Rue Bertaux, Fontenay-Trésigny" },
   "77620001": { "enseigne": "U Express", "source": "Google Maps: Route de Lorrez, Lorrez-le-Bocage-Préaux" },
-  "77880001": { "enseigne": "Esso", "source": "Google Maps: RN 7, Viry-Châtillon" }
+  "77880001": { "enseigne": "Esso", "source": "Google Maps: RN 7, Viry-Châtillon" },
+  
+  "_note12": "Lot 8 stations Seine-et-Marne (77100-77810)",
+  "77230006": { "enseigne": "TotalEnergies", "source": "Google Maps: RN 2 Route de Soissons, REL.CHANTEMERLE" },
+  "77300001": { "enseigne": "TotalEnergies", "source": "Google Maps: 44 Bd du Maréchal Foch, Fontainebleau" },
+  "77320008": { "enseigne": "Intermarché", "source": "Google Maps: La Ferté-Gaucher" },
+  "77340008": { "enseigne": "TotalEnergies", "source": "Google Maps: CD51 Rue des Berchères, Pontault-Combault" },
+  "77810002": { "enseigne": "Carrefour", "source": "Google Maps: 32 Route de Trilport" },
+  
+  "_not_found_lot8": "77100003 (Route de Meaux), 77190008 (Aire La Boulie), 77660001 (Route de Lassigny), 77440002 (ZAC Champ de Foire), 77500001 (43 Rue de Paris Chelles)"
 }
