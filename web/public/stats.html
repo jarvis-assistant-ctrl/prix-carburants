@@ -9,13 +9,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
             min-height: 100vh;
-            color: #fff;
+            color: #1a1a2e;
             padding: 20px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 30px; font-size: 2em; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2em; color: #16213e; }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -23,44 +23,46 @@
             margin-bottom: 30px;
         }
         .stat-card {
-            background: rgba(255,255,255,0.1);
+            background: #fff;
             border-radius: 15px;
             padding: 20px;
             text-align: center;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .stat-value {
             font-size: 2.5em;
             font-weight: bold;
-            color: #4ade80;
+            color: #16a34a;
         }
-        .stat-label { color: #94a3b8; margin-top: 5px; }
+        .stat-label { color: #64748b; margin-top: 5px; }
         .chart-container {
-            background: rgba(255,255,255,0.05);
+            background: #fff;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .chart-title { margin-bottom: 15px; font-size: 1.2em; }
+        .chart-title { margin-bottom: 15px; font-size: 1.2em; color: #16213e; }
         #hourlyChart { max-height: 300px; }
         .endpoints {
-            background: rgba(255,255,255,0.05);
+            background: #fff;
             border-radius: 15px;
             padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .endpoint-item {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid #e5e7eb;
         }
         .endpoint-item:last-child { border-bottom: none; }
-        .endpoint-name { color: #94a3b8; }
-        .endpoint-count { color: #4ade80; font-weight: bold; }
+        .endpoint-name { color: #64748b; }
+        .endpoint-count { color: #16a34a; font-weight: bold; }
         .refresh-info {
             text-align: center;
             margin-top: 20px;
-            color: #64748b;
+            color: #94a3b8;
             font-size: 0.9em;
         }
     </style>
@@ -146,8 +148,8 @@
                         datasets: [{
                             label: 'Requêtes',
                             data: values,
-                            backgroundColor: 'rgba(74, 222, 128, 0.6)',
-                            borderColor: 'rgba(74, 222, 128, 1)',
+                            backgroundColor: 'rgba(22, 163, 74, 0.6)',
+                            borderColor: 'rgba(22, 163, 74, 1)',
                             borderWidth: 1
                         }]
                     },
@@ -159,12 +161,12 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                grid: { color: 'rgba(255,255,255,0.1)' },
-                                ticks: { color: '#94a3b8' }
+                                grid: { color: 'rgba(0,0,0,0.05)' },
+                                ticks: { color: '#64748b' }
                             },
                             x: {
                                 grid: { display: false },
-                                ticks: { color: '#94a3b8' }
+                                ticks: { color: '#64748b' }
                             }
                         }
                     }
