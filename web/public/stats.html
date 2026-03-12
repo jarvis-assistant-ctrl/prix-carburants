@@ -110,6 +110,7 @@
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
+                console.log('Stats loaded:', data);
                 updateDisplay(data);
             } catch (e) {
                 console.error('Erreur chargement stats:', e);
@@ -131,8 +132,8 @@
             const labels = [];
             const values = [];
             for (let h = 0; h < 24; h++) {
-                labels.push(`${h}h`);
                 const key = `${h}h-${h + 1}h`;
+                labels.push(`${h}h`);
                 values.push(data.hourly[key] || 0);
             }
 
@@ -193,6 +194,12 @@
 
         // Charger au démarrage
         loadStats();
+
+        // Vérifier que Chart.js est chargé
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js non chargé !');
+            document.body.insertAdjacentHTML('afterbegin', '<div style="background:red;color:white;padding:10px;text-align:center;">⚠️ Chart.js n\'a pas pu être chargé. Vérifiez votre connexion internet.</div>');
+        }
 
         // Rafraîchir toutes les 30 secondes
         setInterval(loadStats, 30000);
