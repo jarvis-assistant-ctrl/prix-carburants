@@ -13,7 +13,13 @@ const xml2js = require('xml2js');
 const db = require('./db');
 const enseignes = require('./enseignes');
 const stats = require('./stats');
+const express = require('express');
 const path = require('path');
+
+const app = express();
+
+// Servir les fichiers statiques (stats.html, etc.)
+app.use(express.static(path.join(__dirname, 'public')));
 const fs = require('fs');
 
 const VERSION = require('./package.json').version;
