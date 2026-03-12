@@ -88,12 +88,10 @@
     <script src="/chart.min.js"></script>
     <script>
     const STATS_PASSWORD = 'jarvis2026';
+    const TIMEOUT_MS = 60 * 60 * 1000; // 1 heure
     const app = document.getElementById('app');
     
-    // Vérifier le password dans localStorage (avec timeout 1h)
-    const STATS_PASSWORD = 'jarvis2026';
-    const TIMEOUT_MS = 60 * 60 * 1000; // 1 heure
-    
+    // Vérifier le password dans localStorage (avec timeout)
     let password = localStorage.getItem('stats_password');
     const lastAuth = parseInt(localStorage.getItem('stats_auth_time') || '0');
     const now = Date.now();
