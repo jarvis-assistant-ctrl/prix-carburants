@@ -49,122 +49,160 @@
         .endpoint-name { color: #16213e; }
         .endpoint-count { font-weight: bold; color: #667eea; }
         .update-info { text-align: center; color: #94a3b8; margin-top: 20px; font-size: 0.85em; }
+        
+        /* Login form */
+        .login-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 350px;
+            margin: 100px auto;
+        }
+        .login-box h2 { margin: 0 0 1rem; color: #16213e; }
+        .login-box input {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 200px;
+            margin-bottom: 1rem;
+        }
+        .login-box input:focus { outline: none; border-color: #667eea; }
+        .login-box button {
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .login-box button:hover { background: #5a67d8; }
+        .error { color: #dc3545; margin-top: 0.5rem; font-size: 0.875rem; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 Stats Prix Carburants</h1>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value" id="totalRequests">-</div>
-                <div class="stat-label">Total requêtes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="peakHour">-</div>
-                <div class="stat-label">Heure de pointe</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="peakCount">-</div>
-                <div class="stat-label">Max/heure</div>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart-title">📈 Requêtes par heure</div>
-            <div id="hourlyText">Chargement...</div>
-            <canvas id="hourlyChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart-title">📍 Endpoints populaires</div>
-            <div id="endpointsList"></div>
-        </div>
-
-        <div class="update-info">
-            Dernière MAJ: <span id="lastUpdate">-</span>
-        </div>
-    </div>
-
+    <div id="app"></div>
     <script src="/chart.min.js"></script>
     <script>
-    console.log('Page chargée, Chart.js:', typeof Chart);
+    const STATS_PASSWORD = 'jarvis2026';
+    const app = document.getElementById('app');
     
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM prêt');
-        
-        async function loadStats() {
-            try {
-                console.log('Chargement stats...');
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                console.log('Données reçues:', data);
-                updateDisplay(data);
-            } catch (e) {
-                console.error('Erreur:', e);
-                document.getElementById('hourlyText').innerHTML = '<span style="color:red">Erreur: ' + e.message + '</span>';
-            }
+    // Vérifier le password dans localStorage
+    let password = localStorage.getItem('stats_password');
+    
+    if (!password) {
+        // Afficher le formulaire de login
+        app.innerHTML = `
+        <div class="login-box">
+            <h2>📊 Accès Stats</h2>
+            <input type="password" id="pwd" placeholder="Mot de passe" autofocus>
+            <br><br>
+            <button onclick="login()">Accéder</button>
+            <p id="error" class="error" style="display:none;">Mot de passe incorrect</p>
+        </div>`;
+        document.getElementById('pwd').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+    } else {
+        showStats();
+    }
+    
+    function login() {
+        const pwd = document.getElementById('pwd').value;
+        if (pwd === STATS_PASSWORD) {
+            localStorage.setItem('stats_password', pwd);
+            password = pwd;
+            showStats();
+        } else {
+            document.getElementById('error').style.display = 'block';
         }
-
-        function updateDisplay(data) {
-            console.log('updateDisplay:', data);
-            
-            // Stats globales ( avec fallback pour undefined)
-            document.getElementById('totalRequests').textContent = (data.total_requests || 0).toLocaleString();
-            document.getElementById('peakHour').textContent = data.peak_hour || '-';
-            document.getElementById('peakCount').textContent = (data.peak_count || 0).toLocaleString();
-
-            // Données horaires en texte
-            const hourlyText = Object.entries(data.hourly || {})
-                .sort((a, b) => {
-                    const hA = parseInt(a[0]);
-                    const hB = parseInt(b[0]);
-                    return hA - hB;
-                })
-                .map(([h, v]) => `${h}: ${v}`)
-                .join(' | ');
-            document.getElementById('hourlyText').textContent = hourlyText || 'Aucune donnée';
-
-            // Endpoints
-            const endpointsList = document.getElementById('endpointsList');
-            const sorted = Object.entries(data.endpoints || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            endpointsList.innerHTML = sorted.map(([ep, count]) => 
-                `<div class="endpoint-item"><span class="endpoint-name">${ep}</span><span class="endpoint-count">${count}</span></div>`
-            ).join('');
-
-            // Graphique
-            if (typeof Chart === 'undefined') {
-                console.error('Chart.js non chargé !');
+    }
+    
+    function showStats() {
+        app.innerHTML = `
+        <div class="container">
+            <h1>📊 Stats Prix Carburants</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRequests">-</div>
+                    <div class="stat-label">Total requêtes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="peakHour">-</div>
+                    <div class="stat-label">Heure de pointe</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="peakCount">-</div>
+                    <div class="stat-label">Max/heure</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">📈 Requêtes par heure</div>
+                <div id="hourlyText">Chargement...</div>
+                <canvas id="hourlyChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">📍 Endpoints populaires</div>
+                <div id="endpointsList"></div>
+            </div>
+            <div class="update-info">
+                Dernière MAJ: <span id="lastUpdate">-</span>
+            </div>
+        </div>`;
+        loadStats();
+        setInterval(loadStats, 30000);
+    }
+    
+    async function loadStats() {
+        try {
+            const res = await fetch('/api/stats?password=' + password);
+            if (!res.ok) {
+                localStorage.removeItem('stats_password');
+                location.reload();
                 return;
             }
+            const data = await res.json();
+            updateDisplay(data);
+        } catch (e) {
+            document.getElementById('hourlyText').innerHTML = '<span style="color:red">Erreur: ' + e.message + '</span>';
+        }
+    }
+    
+    function updateDisplay(data) {
+        document.getElementById('totalRequests').textContent = (data.total_requests || 0).toLocaleString();
+        document.getElementById('peakHour').textContent = data.peak_hour || '-';
+        document.getElementById('peakCount').textContent = (data.peak_count || 0).toLocaleString();
 
-            const labels = [];
-            const values = [];
+        const hourlyText = Object.entries(data.hourly || {})
+            .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+            .map(([h, v]) => `${h}: ${v}`)
+            .join(' | ');
+        document.getElementById('hourlyText').textContent = hourlyText || 'Aucune donnée';
+
+        const sorted = Object.entries(data.endpoints || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        document.getElementById('endpointsList').innerHTML = sorted
+            .map(([ep, count]) => `<div class="endpoint-item"><span class="endpoint-name">${ep}</span><span class="endpoint-count">${count}</span></div>`)
+            .join('');
+
+        if (typeof Chart !== 'undefined') {
+            const labels = [], values = [];
             for (let h = 0; h < 24; h++) {
                 labels.push(h + 'h');
                 values.push(data.hourly[`${h}h-${h+1}h`] || 0);
             }
-
-            const canvas = document.getElementById('hourlyChart');
-            const ctx = canvas.getContext('2d');
-            
-            // Détruire l'ancien graphique s'il existe ET est un Chart
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
             if (window.hourlyChart && typeof window.hourlyChart.destroy === 'function') {
                 window.hourlyChart.destroy();
             }
-            
             window.hourlyChart = new Chart(ctx, {
                 type: 'bar',
                 data: { labels, datasets: [{ label: 'Req', data: values, backgroundColor: '#667eea' }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
-
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('fr-FR');
         }
-
-        loadStats();
-        setInterval(loadStats, 30000);
-    });
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('fr-FR');
+    }
     </script>
 </body>
 </html>
