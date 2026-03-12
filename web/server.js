@@ -12,6 +12,7 @@ const AdmZip = require('adm-zip');
 const xml2js = require('xml2js');
 const db = require('./db');
 const enseignes = require('./enseignes');
+const stats = require('./stats');
 const path = require('path');
 const fs = require('fs');
 
@@ -53,6 +54,17 @@ app.use('/api', (req, res, next) => {
     return originalJson(data);
   };
   next();
+});
+
+// Compteur de requêtes pour les stats
+app.use('/api', (req, res, next) => {
+  stats.recordRequest(req.path);
+  next();
+});
+
+// Route pour les stats
+app.get('/api/stats', (req, res) => {
+  res.json(stats.get());
 });
 
 /**
