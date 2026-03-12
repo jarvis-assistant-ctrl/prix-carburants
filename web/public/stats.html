@@ -28,7 +28,7 @@
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .stat-value { font-size: 2em; font-weight: bold; color: #374151; }
+        .stat-value { font-size: 2em; font-weight: bold; color: #667eea; }
         .stat-label { color: #64748b; margin-top: 5px; font-size: 0.9em; }
         .chart-container {
             background: #fff;
@@ -47,7 +47,7 @@
             border-bottom: 1px solid #eee;
         }
         .endpoint-name { color: #16213e; }
-        .endpoint-count { font-weight: bold; color: #374151; }
+        .endpoint-count { font-weight: bold; color: #667eea; }
         .update-info { text-align: center; color: #94a3b8; margin-top: 20px; font-size: 0.85em; }
     </style>
 </head>
@@ -155,7 +155,7 @@
             
             window.hourlyChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels, datasets: [{ label: 'Req', data: values, backgroundColor: '#374151' }] },
+                data: { labels, datasets: [{ label: 'Req', data: values, backgroundColor: '#667eea' }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
