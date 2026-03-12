@@ -458,6 +458,12 @@ async function start() {
     await db.init();
     console.log('✅ Base de données initialisée');
     
+    // Nettoyer les anciens enregistrements (> 30 jours)
+    const deleted = await db.cleanOldRecords(30);
+    if (deleted > 0) {
+      console.log(`🧹 ${deleted} anciens enregistrements supprimés (> 30 jours)`);
+    }
+    
     // Pré-charger les données au démarrage
     await refreshData();
     console.log('📥 Données prix-carburants chargées');
