@@ -167,5 +167,20 @@
   "77680004": { "enseigne": "Intermarché", "source": "Google Maps: Roissy-en-Brie, Place Robert Schuman" },
   "77230001": { "enseigne": "Carrefour", "source": "Google Maps: Saint-Mard, HyperCarrefour Station Essence Libre Service" },
   
-  "_not_found_lot5": "77230002 (Zone Industrielle), 77240001 (CP 77240), 77240004, 77240005 - adresses non valides"
+  "_not_found_lot5": "77230002 (Zone Industrielle), 77240001 (CP 77240), 77240004, 77240005 - adresses non valides",
+  
+  "_note10": "Lot 6 stations Seine-et-Marne (77230-77760)",
+  "77250004": { "enseigne": "Carrefour", "source": "Google Maps: 11 Rue de l'Orvanne, Moret-Loing-et-Orvanne" },
+  "77260011": { "enseigne": "Enilive", "source": "Google Maps: Aire de Ussy-sur-Marne A4" },
+  "77230004": { "enseigne": "Intermarché", "source": "Google Maps: Route de Vemars, Moussy-le-Neuf" },
+  "77240002": { "enseigne": "Auchan", "source": "Google Maps: RN6 Centre Cial Boissenart, Vert-Saint-Denis" },
+  "77300005": { "enseigne": "BP", "source": "Google Maps: Carrefour de la Libération, Fontainebleau" },
+  "77340007": { "enseigne": "TotalEnergies", "source": "Google Maps: N104 La Francilienne, Aire de la Soubriarde" },
+  "77350005": { "enseigne": "TotalEnergies", "source": "Google Maps: Av. Maurice Dauvergne, Le Mée-sur-Seine" },
+  "77370003": { "enseigne": "Intermarché", "source": "Google Maps: Route de Fontainebleau, Nangis" },
+  "77508002": { "enseigne": "Carrefour", "source": "Google Maps: RN3, Claye-Souilly" },
+  "77690001": { "enseigne": "Station indépendante", "source": "Google Maps: Station Service de Montigny, 22 Rue du Poirier de Fromie, Montigny-sur-Loing" },
+  "77760001": { "enseigne": "Avia", "source": "Google Maps: Rue de l'Avenir, La Chapelle-la-Reine" },
+  
+  "_not_found_lot6": "77720002 - les Chaumes RN19 non trouvée"
 }
