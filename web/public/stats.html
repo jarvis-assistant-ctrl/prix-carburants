@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Stats Prix Carburants</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 2em; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        .stat-label { color: #94a3b8; margin-top: 5px; }
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-title { margin-bottom: 15px; font-size: 1.2em; }
+        #hourlyChart { max-height: 300px; }
+        .endpoints {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .endpoint-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .endpoint-item:last-child { border-bottom: none; }
+        .endpoint-name { color: #94a3b8; }
+        .endpoint-count { color: #4ade80; font-weight: bold; }
+        .refresh-info {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Stats du jour</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRequests">-</div>
+                <div class="stat-label">Requêtes total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="peakHour">-</div>
+                <div class="stat-label">Heure de pointe</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="peakCount">-</div>
+                <div class="stat-label">Pic requêtes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgHour">-</div>
+                <div class="stat-label">Moyenne/heure</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📈 Requêtes par heure</div>
+            <canvas id="hourlyChart"></canvas>
+        </div>
+
+        <div class="endpoints">
+            <div class="chart-title">📍 Endpoints populaires</div>
+            <div id="endpointsList"></div>
+        </div>
+
+        <div class="refresh-info">
+            Dernière mise à jour: <span id="lastUpdate">-</span>
+        </div>
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                updateDisplay(data);
+            } catch (e) {
+                console.error('Erreur chargement stats:', e);
+            }
+        }
+
+        function updateDisplay(data) {
+            // Stats globales
+            document.getElementById('totalRequests').textContent = data.total_requests.toLocaleString();
+            document.getElementById('peakHour').textContent = data.peak_hour || 'N/A';
+            document.getElementById('peakCount').textContent = data.peak_count.toLocaleString();
+            
+            // Moyenne par heure
+            const hours = Object.keys(data.hourly).length || 1;
+            const avg = Math.round(data.total_requests / hours);
+            document.getElementById('avgHour').textContent = avg;
+
+            // Graphique par heure
+            const labels = [];
+            const values = [];
+            for (let h = 0; h < 24; h++) {
+                labels.push(`${h}h`);
+                const key = `${h}h-${h + 1}h`;
+                values.push(data.hourly[key] || 0);
+            }
+
+            if (window.hourlyChart) {
+                window.hourlyChart.data.datasets[0].data = values;
+                window.hourlyChart.update();
+            } else {
+                const ctx = document.getElementById('hourlyChart').getContext('2d');
+                window.hourlyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Requêtes',
+                            data: values,
+                            backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                            borderColor: 'rgba(74, 222, 128, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: '#94a3b8' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Endpoints
+            const endpointsList = document.getElementById('endpointsList');
+            const sortedEndpoints = Object.entries(data.endpoints || {})
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            endpointsList.innerHTML = sortedEndpoints
+                .map(([ep, count]) => `
+                    <div class="endpoint-item">
+                        <span class="endpoint-name">${ep}</span>
+                        <span class="endpoint-count">${count.toLocaleString()}</span>
+                    </div>
+                `)
+                .join('');
+
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('fr-FR');
+        }
+
+        // Charger au démarrage
+        loadStats();
+
+        // Rafraîchir toutes les 30 secondes
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
