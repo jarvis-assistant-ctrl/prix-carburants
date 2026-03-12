@@ -16,6 +16,9 @@ let stats = {
   endpoints: {}
 };
 
+// Debug: afficher au chargement
+console.log('📊 Stats initialisées:', stats.date);
+
 /**
  * Charge les stats du jour depuis le fichier
  */
@@ -63,6 +66,8 @@ function recordRequest(endpoint) {
   stats.total_requests++;
   stats.hourly[hourKey] = (stats.hourly[hourKey] || 0) + 1;
   stats.endpoints[endpoint] = (stats.endpoints[endpoint] || 0) + 1;
+  
+  console.log(`📊 Requête enregistrée: ${endpoint} (total: ${stats.total_requests})`);
   
   // Sauvegarder toutes les 100 requêtes pour éviter les I/O excessives
   if (stats.total_requests % 100 === 0) {
@@ -118,6 +123,7 @@ function format() {
 
 // Charger les stats au démarrage
 load();
+console.log('📊 Module stats chargé');
 
 // Sauvegarder les stats toutes les 5 minutes
 setInterval(() => {

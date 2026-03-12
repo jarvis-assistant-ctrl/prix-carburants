@@ -210,6 +210,7 @@ function getNearbyStations(lat, lon, radiusKm, carburant = null) {
  * Params: lat, lon, radius (km), carburant (optionnel)
  */
 app.get('/api/stations', async (req, res) => {
+  stats.recordRequest('/api/stations');
   try {
     const { lat, lon, radius = 10, carburant } = req.query;
     
