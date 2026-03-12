@@ -115,5 +115,17 @@
   "_note5": "Boussy-Saint-Antoine/Brunoy (91800) - Essonne",
   "91800005": { "enseigne": "Carrefour", "source": "Google Maps: Brunoy, Centre Commercial Val d'Yerres" },
   "91800009": { "enseigne": "Esso", "source": "Google Maps: Brunoy, 5 Bd Charles de Gaulle" },
-  "91800010": { "enseigne": "Station indépendante", "source": "Google Maps: Non trouvée - Ham. Lachambaudie, Brunoy" }
+  "91800010": { "enseigne": "Station indépendante", "source": "Google Maps: Non trouvée - Ham. Lachambaudie, Brunoy" },
+  
+  "_note6": "Lot 10 stations Seine-et-Marne (77000-77124)",
+  "77000011": { "enseigne": "TotalEnergies", "source": "Google Maps: Melun, RN 5 BIS RTE DE NANGIS" },
+  "77000005": { "enseigne": "TotalEnergies", "source": "Google Maps: Melun, 48 Avenue de Meaux" },
+  "77090001": { "enseigne": "Carrefour", "source": "Google Maps: Collégien, Centre Commercial Bay 2" },
+  "77100023": { "enseigne": "TotalEnergies", "source": "Google Maps: Torcy, 334 Avenue de la Victoire" },
+  "77100016": { "enseigne": "E.Leclerc", "source": "Google Maps: Mareuil-lès-Meaux, 30 Mail de la Grande Haie" },
+  "77120005": { "enseigne": "Intermarché", "source": "Google Maps: Coulommiers, 5 Rue Abel Prouharam" },
+  "77124001": { "enseigne": "Carrefour", "source": "Google Maps: Crégy-lès-Meaux, ZAC des Vignes" },
+  "77124002": { "enseigne": "Auchan", "source": "Google Maps: Chauconin-Neufmontiers, 11 Av Roland Moreno" },
+  
+  "_remaining": "77000003, 77120004 - non trouvées"
 }
