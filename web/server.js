@@ -75,8 +75,50 @@ const STATS_PASSWORD = process.env.STATS_PASSWORD || 'jarvis2026';
 function checkStatsAuth(req, res, next) {
   const password = req.query.password || req.headers['x-stats-password'];
   if (password === STATS_PASSWORD) return next();
+  
+  // Page de login pour navigateur
+  if (req.accepts('html')) {
+    return res.send(`
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats - Authentification</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .login-box { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; }
+    h2 { margin: 0 0 1rem; color: #16213e; }
+    input { padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; width: 200px; margin-bottom: 1rem; }
+    input:focus { outline: none; border-color: #667eea; }
+    button { padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: transform 0.2s; }
+    button:hover { transform: scale(1.05); background: #5a67d8; }
+    .error { color: #dc3545; margin-top: 0.5rem; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>📊 Accès Stats</h2>
+    <form method="GET" action="/api/stats">
+      <input type="password" name="password" placeholder="Mot de passe" required autofocus>
+      <br>
+      <button type="submit">Accéder</button>
+    </form>
+    <p id="error" class="error" style="display:none;">Mot de passe incorrect</p>
+  </div>
+  <script>
+    if (location.search.includes('error=1')) document.getElementById('error').style.display = 'block';
+  </script>
+</body>
+</html>
+    `);
+  }
+  
   res.status(401).json({ error: 'Non autorisé. Ajoutez ?password=XXX' });
 }
+
+// Protéger la page stats
+app.get('/stats.html', checkStatsAuth, (req, res, next) => next());
 
 app.get('/api/stats', checkStatsAuth, (req, res) => {
   res.json(stats.get());

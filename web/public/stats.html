@@ -109,10 +109,10 @@
         function updateDisplay(data) {
             console.log('updateDisplay:', data);
             
-            // Stats globales
-            document.getElementById('totalRequests').textContent = data.total_requests.toLocaleString();
+            // Stats globales ( avec fallback pour undefined)
+            document.getElementById('totalRequests').textContent = (data.total_requests || 0).toLocaleString();
             document.getElementById('peakHour').textContent = data.peak_hour || '-';
-            document.getElementById('peakCount').textContent = data.peak_count.toLocaleString();
+            document.getElementById('peakCount').textContent = (data.peak_count || 0).toLocaleString();
 
             // Données horaires en texte
             const hourlyText = Object.entries(data.hourly || {})
