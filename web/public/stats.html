@@ -146,7 +146,13 @@
             }
 
             const ctx = document.getElementById('hourlyChart').getContext('2d');
-            new Chart(ctx, {
+            
+            // Détruire l'ancien graphique s'il existe
+            if (window.hourlyChart) {
+                window.hourlyChart.destroy();
+            }
+            
+            window.hourlyChart = new Chart(ctx, {
                 type: 'bar',
                 data: { labels, datasets: [{ label: 'Req', data: values, backgroundColor: '#16a34a' }] },
                 options: { responsive: true, maintainAspectRatio: false }
