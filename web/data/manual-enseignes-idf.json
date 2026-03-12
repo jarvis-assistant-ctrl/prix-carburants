@@ -127,5 +127,16 @@
   "77124001": { "enseigne": "Carrefour", "source": "Google Maps: Crégy-lès-Meaux, ZAC des Vignes" },
   "77124002": { "enseigne": "Auchan", "source": "Google Maps: Chauconin-Neufmontiers, 11 Av Roland Moreno" },
   
-  "_remaining": "77000003, 77120004 - non trouvées"
+  "_remaining": "77000003, 77120004 - non trouvées",
+  
+  "_note7": "Lot 2 stations Seine-et-Marne (77127-77144)",
+  "77127001": { "enseigne": "Carrefour", "source": "Google Maps: Carré Sénart" },
+  "77130013": { "enseigne": "Fulli", "source": "Google Maps: A5 Aire des Jonchets" },
+  "77130008": { "enseigne": "E.Leclerc", "source": "Google Maps: Centre Commercial du Bréau" },
+  "77130006": { "enseigne": "Carrefour", "source": "Google Maps: Montereau, Bd Diderot" },
+  "77140011": { "enseigne": "TotalEnergies", "source": "Google Maps: Nemours, 10 Av du Général de Gaulle" },
+  "77141003": { "enseigne": "AVIA", "source": "Google Maps: RN4 (incertain)" },
+  "77144002": { "enseigne": "TotalEnergies", "source": "Google Maps: Montévrain, 34 Route de Provins" },
+  
+  "_not_found": "77000003, 77120004, 77130003 - à vérifier"
 }
