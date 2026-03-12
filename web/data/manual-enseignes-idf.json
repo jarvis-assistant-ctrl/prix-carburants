@@ -151,5 +151,14 @@
   "77182001": { "enseigne": "BP", "source": "Google Maps: Aire de la Voulgonne, A5" },
   "77184002": { "enseigne": "Carrefour", "source": "Google Maps: Boussy-Saint-Antoine, Centre Commercial Val d'Yerres" },
   
-  "_remaining_lot3": "77183002 - AIRE DE REPOS A4 non trouvée"
+  "_remaining_lot3": "77183002 - AIRE DE REPOS A4 non trouvée",
+  
+  "_note8": "Lot 4 stations Seine-et-Marne (77183-77210)",
+  "77183001": { "enseigne": "Intermarché", "source": "Google Maps: Croissy-Beaubourg, Boulevard Georges Bidault" },
+  "77184004": { "enseigne": "Carrefour Market", "source": "Google Maps: 4 Boulevard Olof Palme" },
+  "77186001": { "enseigne": "TotalEnergies", "source": "Google Maps: GARAGE BRIE DES NATIONS, 4 Avenue Pierre Mendès France" },
+  "77200001": { "enseigne": "TotalEnergies", "source": "Google Maps: RELAIS FONTAINEBLEAU AVON, 11 Rue de Paris" },
+  "77210001": { "enseigne": "Carrefour Market", "source": "Google Maps: 73 Avenue du Président Franklin Roosevelt" },
+  
+  "_not_found_lot4": "77190006, 77195001 - CP non valides"
 }
