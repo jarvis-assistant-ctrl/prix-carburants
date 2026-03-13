@@ -49,6 +49,17 @@ function load() {
  */
 function save() {
   try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Reset si nouveau jour (correction bug: serveur long-running)
+    if (stats.date !== today) {
+      console.log(`📊 Nouveau jour détecté - reset stats (${stats.date} → ${today})`);
+      stats.date = today;
+      stats.total_requests = 0;
+      stats.hourly = {};
+      stats.endpoints = {};
+    }
+    
     fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
   } catch (e) {
     console.log('📊 Erreur sauvegarde stats:', e.message);
@@ -124,6 +135,9 @@ function format() {
 // Charger les stats au démarrage
 load();
 console.log('📊 Module stats chargé');
+
+// Sauvegarder immédiatement si nouveau jour (sync fichier)
+save();
 
 // Sauvegarder les stats toutes les 5 minutes
 setInterval(() => {
