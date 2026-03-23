@@ -673,6 +673,20 @@ async function start() {
       setInterval(doCollect, 60 * 60 * 1000);
     }, delayToNextHour);
     
+    // Purge des anciens prix toutes les 24h (rétention 30 jours)
+    const doPurge = async () => {
+      try {
+        const deleted = await db.cleanOldRecords(30);
+        if (deleted > 0) {
+          console.log(`🧹 Purge: ${deleted} entrées supprimées (rétention 30 jours)`);
+        }
+      } catch (err) {
+        console.error('❌ Erreur purge:', err);
+      }
+    };
+    setInterval(doPurge, 24 * 60 * 60 * 1000);
+    console.log('🧹 Purge automatique programmée toutes les 24h');
+    
   } catch (error) {
     console.error('❌ Erreur démarrage:', error);
     process.exit(1);
