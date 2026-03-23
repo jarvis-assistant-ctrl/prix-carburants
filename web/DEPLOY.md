@@ -72,6 +72,33 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d prix-carburants.example.com
 ```
 
+## Mode Maintenance
+
+Avant une mise à jour, activer le mode maintenance pour éviter les erreurs utilisateurs :
+
+```bash
+# Activer le mode maintenance
+touch .maintenance
+# ou via API :
+curl -X POST http://localhost:3200/api/maintenance
+
+# Vérifier
+curl http://localhost:3200/api/health
+# {"status":"maintenance","message":"Maintenance mode enabled"}
+```
+
+Le mode maintenance :
+- Renvoie HTTP 503 sur toutes les pages
+- Préserve l'accès à `/api/health` et `/api/maintenance`
+- Affiche une page d'attente aux utilisateurs
+
+```bash
+# Désactiver le mode maintenance
+rm .maintenance
+# ou via API :
+curl -X POST http://localhost:3200/api/maintenance
+```
+
 ## Gestion
 
 ```bash
@@ -81,10 +108,12 @@ docker-compose logs -f
 # Redémarrer
 docker-compose restart
 
-# Mettre à jour
-git pull
+# Mettre à jour (avec maintenance)
+touch .maintenance                    # Activer maintenance
+git pull origin main
 docker-compose build
 docker-compose up -d
+rm .maintenance                       # Désactiver maintenance
 
 # Arrêter
 docker-compose down
